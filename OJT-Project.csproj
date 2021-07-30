@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9674D13A-537C-4644-9F5B-7368E91F5F89}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>OJT_Project</RootNamespace>
+    <AssemblyName>OJT-Project</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>internshipIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MetroFramework, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <HintPath>packages\MetroModernUI.1.4.0.0\lib\net\MetroFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Design, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <HintPath>packages\MetroModernUI.1.4.0.0\lib\net\MetroFramework.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Fonts, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <HintPath>packages\MetroModernUI.1.4.0.0\lib\net\MetroFramework.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=8.0.25.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.5.1\lib\netstandard1.1\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Memory.4.5.4\lib\netstandard1.1\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Admin Client\addDepartments.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Admin Client\addDepartments.Designer.cs">
+      <DependentUpon>addDepartments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Admin Client\addUser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Admin Client\addUser.Designer.cs">
+      <DependentUpon>addUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Admin Client\clearDatabase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Admin Client\clearDatabase.Designer.cs">
+      <DependentUpon>clearDatabase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Admin Client\editDepartments.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Admin Client\editDepartments.Designer.cs">
+      <DependentUpon>editDepartments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Admin Client\editUser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Admin Client\editUser.Designer.cs">
+      <DependentUpon>editUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Admin Client\updateDepartments.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Admin Client\updateDepartments.Designer.cs">
+      <DependentUpon>updateDepartments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Admin Client\updateUser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Admin Client\updateUser.Designer.cs">
+      <DependentUpon>updateUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dept. Head Client\activityEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dept. Head Client\activityEditor.Designer.cs">
+      <DependentUpon>activityEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dept. Head Client\roleEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dept. Head Client\roleEditor.Designer.cs">
+      <DependentUpon>roleEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dept. Head Client\subActivityEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dept. Head Client\subActivityEditor.Designer.cs">
+      <DependentUpon>subActivityEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="hashing.cs" />
+    <Compile Include="connection.cs" />
+    <Compile Include="Dashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dashboard.Designer.cs">
+      <DependentUpon>Dashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Global Functions.cs" />
+    <Compile Include="Login Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Login Form.Designer.cs">
+      <DependentUpon>Login Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="User Client\addTask.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="User Client\addTask.Designer.cs">
+      <DependentUpon>addTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="User Client\editTask.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="User Client\editTask.Designer.cs">
+      <DependentUpon>editTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="user.cs" />
+    <Compile Include="z_misc\changePassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="z_misc\changePassword.Designer.cs">
+      <DependentUpon>changePassword.cs</DependentUpon>
+    </Compile>
+    <Compile Include="z_misc\enterPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="z_misc\enterPassword.Designer.cs">
+      <DependentUpon>enterPassword.cs</DependentUpon>
+    </Compile>
+    <Compile Include="z_misc\forgotPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="z_misc\forgotPassword.Designer.cs">
+      <DependentUpon>forgotPassword.cs</DependentUpon>
+    </Compile>
+    <Compile Include="z_misc\oneTimePasswordVerification.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="z_misc\oneTimePasswordVerification.Designer.cs">
+      <DependentUpon>oneTimePasswordVerification.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Admin Client\addDepartments.resx">
+      <DependentUpon>addDepartments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Admin Client\addUser.resx">
+      <DependentUpon>addUser.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Admin Client\clearDatabase.resx">
+      <DependentUpon>clearDatabase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Admin Client\editDepartments.resx">
+      <DependentUpon>editDepartments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Admin Client\editUser.resx">
+      <DependentUpon>editUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Admin Client\updateDepartments.resx">
+      <DependentUpon>updateDepartments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Admin Client\updateUser.resx">
+      <DependentUpon>updateUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dashboard.resx">
+      <DependentUpon>Dashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dept. Head Client\activityEditor.resx">
+      <DependentUpon>activityEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dept. Head Client\roleEditor.resx">
+      <DependentUpon>roleEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dept. Head Client\subActivityEditor.resx">
+      <DependentUpon>subActivityEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Login Form.resx">
+      <DependentUpon>Login Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="User Client\addTask.resx">
+      <DependentUpon>addTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Client\editTask.resx">
+      <DependentUpon>editTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="z_misc\changePassword.resx">
+      <DependentUpon>changePassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="z_misc\enterPassword.resx">
+      <DependentUpon>enterPassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="z_misc\forgotPassword.resx">
+      <DependentUpon>forgotPassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="z_misc\oneTimePasswordVerification.resx">
+      <DependentUpon>oneTimePasswordVerification.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="internshipIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

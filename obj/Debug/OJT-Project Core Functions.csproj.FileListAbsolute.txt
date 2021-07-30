@@ -1,0 +1,5 @@
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Debug\OJT_Project.Properties.Resources.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Debug\OJT-Project Core Functions.csproj.GenerateResource.cache
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Debug\OJT-Project Core Functions.csproj.CoreCompileInputs.cache
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Debug\OJT-Project.exe
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Debug\OJT-Project.pdb

@@ -1,0 +1,10 @@
+D:\Windows Form Projects\OJT-Project\bin\Debug\OJT-Project.exe.config
+D:\Windows Form Projects\OJT-Project\bin\Debug\OJT-Project.exe
+D:\Windows Form Projects\OJT-Project\bin\Debug\OJT-Project.pdb
+D:\Windows Form Projects\OJT-Project\obj\Debug\User Client.csprojAssemblyReference.cache
+D:\Windows Form Projects\OJT-Project\obj\Debug\OJT_Project.Form1.resources
+D:\Windows Form Projects\OJT-Project\obj\Debug\OJT_Project.Properties.Resources.resources
+D:\Windows Form Projects\OJT-Project\obj\Debug\User Client.csproj.GenerateResource.cache
+D:\Windows Form Projects\OJT-Project\obj\Debug\User Client.csproj.CoreCompileInputs.cache
+D:\Windows Form Projects\OJT-Project\obj\Debug\OJT-Project.exe
+D:\Windows Form Projects\OJT-Project\obj\Debug\OJT-Project.pdb
