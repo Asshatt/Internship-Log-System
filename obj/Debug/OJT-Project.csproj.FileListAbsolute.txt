@@ -46,3 +46,7 @@ D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Debu
 D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Debug\OJT_Project.Admin_Client.addDepartments.resources
 D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Debug\OJT_Project.Admin_Client.updateDepartments.resources
 D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Debug\OJT_Project.Admin_Client.clearDatabase.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Debug\OJT-Project.exe.manifest
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Debug\OJT-Project.application
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Debug\OJT-Project.exe.manifest
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Debug\OJT-Project.application

@@ -13,17 +13,17 @@ namespace OJT_Project
 {
     public static class connection
     {
-        public static string DatabaseConnection = "datasource=127.0.0.1;port=3306;username=root;password=;database=ojt_todolist_project";
-
+        //public static string DatabaseConnection = "datasource=127.0.0.1;port=3306;username=root;password=;database=ojt_todolist_project_deleteTest";
+        public static string DatabaseConnection = "datasource=18.141.124.114;port=3306;username=logsys_user;password=;database=log_system";
         ///OLD SQL FUNCTIONS, VERY NOT SECURE
-        public static DataTable parseDataTableFromDB(string query) 
+        public static DataTable parseDataTableFromDB(string query)
         {
             //establish connection
             MySqlConnection con = new MySqlConnection(connection.DatabaseConnection);
             DataTable table = new DataTable();
-            try 
+            con.Open();
+            try
             {
-                con.Open();
             }
             catch 
             {

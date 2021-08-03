@@ -569,7 +569,7 @@ namespace OJT_Project
         {
             Admin_Client.clearDatabase clearDatabase = new Admin_Client.clearDatabase();
             z_misc.enterPassword passwordConfirmation = new z_misc.enterPassword(clearDatabase, user.id, user.permissionLevel);
-            passwordConfirmation.FormClosed += (s, args) => this.Show();
+            passwordConfirmation.FormClosed += (s, args) => updateDashboard();
             this.Hide();
             passwordConfirmation.Show();
         }
