@@ -25,10 +25,13 @@ namespace OJT_Project.Admin_Client
 
         private void updateDepartmentPreview()
         {
+            MySqlConnection updateDeptCon = new MySqlConnection(connection.DatabaseConnection);
+            updateDeptCon.OpenWithWarning();
+
             this.Show();
             flp_departments.Controls.Clear();
             MySqlCommand selectAllDepartments = new MySqlCommand("SELECT * FROM `departments` WHERE `status` = 1 AND `id` != 0");
-            DataTable allDepartments = connection.parseDataTableFromDB_secure(selectAllDepartments);
+            DataTable allDepartments = connection.parseDataTableFromDB_secure(selectAllDepartments, updateDeptCon);
 
             for (int i = 0; i < allDepartments.Rows.Count; i++)
             {
@@ -44,6 +47,7 @@ namespace OJT_Project.Admin_Client
                 deptButton.AutoEllipsis = false;
                 flp_departments.Controls.Add(deptButton);
             }
+            updateDeptCon.Close();
         }
 
         private void editDepartments_Load(object sender, EventArgs e)
@@ -53,6 +57,7 @@ namespace OJT_Project.Admin_Client
 
         private void btn_removeDepartment_Click(object sender, EventArgs e)
         {
+            MySqlConnection removeDeptCon = new MySqlConnection(connection.DatabaseConnection);
             indexedRadioButton selectedButton = globalFunctions.getCheckedRadio(flp_departments);
             if (selectedButton == null)
             {
@@ -62,17 +67,18 @@ namespace OJT_Project.Admin_Client
 
             MySqlCommand removeDepartment = new MySqlCommand("UPDATE `departments` SET `status` = 0 WHERE `id` = @id");
             removeDepartment.Parameters.AddWithValue("@id", selectedButton.id);
-            connection.executeQuery_secure(removeDepartment);
+            connection.executeQuery_secure(removeDepartment, removeDeptCon);
 
             MySqlCommand updateDepartmentHead = new MySqlCommand("UPDATE `department_heads` SET `department_id` = 0 WHERE `department_id` = @deptID");
             updateDepartmentHead.Parameters.AddWithValue("@deptID", selectedButton.id);
-            connection.executeQuery_secure(updateDepartmentHead);
+            connection.executeQuery_secure(updateDepartmentHead, removeDeptCon);
 
             MySqlCommand updateUsers = new MySqlCommand("UPDATE `users` SET `department_id` = 0 WHERE `department_id` = @deptID");
             updateUsers.Parameters.AddWithValue("@deptID", selectedButton.id);
-            connection.executeQuery_secure(updateUsers);
+            connection.executeQuery_secure(updateUsers, removeDeptCon);
 
             updateDepartmentPreview();
+            removeDeptCon.Close();
         }
 
         private void btn_addDepartment_Click(object sender, EventArgs e)

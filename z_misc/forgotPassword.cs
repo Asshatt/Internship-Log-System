@@ -33,6 +33,9 @@ namespace OJT_Project.z_misc
 
         private void btn_confirm_Click(object sender, EventArgs e)
         {
+            MySqlConnection confirmCon = new MySqlConnection(connection.DatabaseConnection);
+            confirmCon.OpenWithWarning();
+
             //check if user is registered in the database
             MySqlCommand checkIfUserExists = new MySqlCommand(
                 "SELECT `email` FROM `users` WHERE `status` = 1 AND `email` = @email UNION " +
@@ -40,7 +43,7 @@ namespace OJT_Project.z_misc
                 "SELECT `email` FROM `admins` WHERE `status` = 1 AND `email` = @email");
             checkIfUserExists.Parameters.AddWithValue("@email", tbx_email.Text.Trim());
 
-            DataTable usersWithThisEmail = connection.parseDataTableFromDB_secure(checkIfUserExists);
+            DataTable usersWithThisEmail = connection.parseDataTableFromDB_secure(checkIfUserExists, confirmCon);
             //if user exists, send them an email featuring the one time password
             if(usersWithThisEmail.Rows.Count > 0)
             {
@@ -52,12 +55,12 @@ namespace OJT_Project.z_misc
                 checkOTP.Parameters.AddWithValue("@email", tbx_email.Text.Trim());
                 
                 //if the user already has a password reset ticket, update the temp password to the current one
-                if(connection.parseDataTableFromDB_secure(checkOTP).Rows.Count > 0)
+                if(connection.parseDataTableFromDB_secure(checkOTP, confirmCon).Rows.Count > 0)
                 {
                     MySqlCommand updateOTP = new MySqlCommand("UPDATE `temp_passwords` SET `password` = @currentPassword WHERE `email` = @email");
                     updateOTP.Parameters.AddWithValue("@currentPassword", oneTimePassword);
                     updateOTP.Parameters.AddWithValue("@email", tbx_email.Text.Trim());
-                    connection.executeQuery_secure(updateOTP);
+                    connection.executeQuery_secure(updateOTP, confirmCon);
                 }
                 //if user does not have a password reset ticket, then make one
                 else
@@ -65,7 +68,7 @@ namespace OJT_Project.z_misc
                     MySqlCommand addOTP = new MySqlCommand("INSERT INTO `temp_passwords` (`password`, `email`) VALUES (@password, @email)");
                     addOTP.Parameters.AddWithValue("@password", oneTimePassword);
                     addOTP.Parameters.AddWithValue("@email", tbx_email.Text.Trim());
-                    connection.executeQuery_secure(addOTP);
+                    connection.executeQuery_secure(addOTP, confirmCon);
                 }
             }
             MessageBox.Show("A message has been sent to your email containing your one time password");
@@ -73,6 +76,7 @@ namespace OJT_Project.z_misc
             oneTimePasswordVerification OTP = new oneTimePasswordVerification(tbx_email.Text.Trim());
             OTP.FormClosed += (s, args) => this.Close();
             OTP.Show();
+            confirmCon.Close();
             this.Hide();
             //MySqlCommand getEmail = new MySqlCommand("");
         }

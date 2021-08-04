@@ -76,7 +76,8 @@ namespace OJT_Project.Dept._Head_Client
             }
             else
             {
-                connection.executeQuery("UPDATE `sub_activities` SET `status` = 0 WHERE `sub_activities`.`id` = " + id);
+                MySqlConnection deleteSubActCon = new MySqlConnection(connection.DatabaseConnection);
+                connection.executeQuery("UPDATE `sub_activities` SET `status` = 0 WHERE `sub_activities`.`id` = " + id, deleteSubActCon);
                 updateSubActivities(Convert.ToInt32(activityList.Rows[cbx_activeActivity.SelectedIndex]["id"]));
             }
         }
@@ -95,22 +96,29 @@ namespace OJT_Project.Dept._Head_Client
             {
                 return;
             }
+            MySqlConnection changeSubNameCon = new MySqlConnection(connection.DatabaseConnection);
+
             tbx.initialText = newName;
             MySqlCommand updateSubActivityName = new MySqlCommand("UPDATE `sub_activities` SET `subActivityName` = @newName WHERE `id` = @id");
             updateSubActivityName.Parameters.AddWithValue("@newName", newName);
             updateSubActivityName.Parameters.AddWithValue("@id", id);
-            connection.executeQuery_secure(updateSubActivityName);
+            connection.executeQuery_secure(updateSubActivityName, changeSubNameCon);
             updateSubActivities(Convert.ToInt32(activityList.Rows[cbx_activeActivity.SelectedIndex]["id"]));
+            changeSubNameCon.Close();
         }
 
         private void updateSubActivities(int id) 
         {
             flp_subActivityDisplay.Controls.Clear();
+
+            MySqlConnection updateCon = new MySqlConnection(connection.DatabaseConnection);
             //get a table of all subActivities under the currently selected activity
-            DataTable subActivites = connection.parseDataTableFromDB("SELECT * FROM `sub_activities` WHERE `parentActivity_id` = " + id + " AND `status` = 1 ORDER BY `subActivityName`");
-            
+            DataTable subActivites = connection.parseDataTableFromDB("SELECT * FROM `sub_activities` WHERE `parentActivity_id` = " + id + " AND `status` = 1 ORDER BY `subActivityName`", updateCon);
+
+            updateCon.Close();
+
             //create sub activity containers for all of the sub activities in the table
-            for(int i = 0; i < subActivites.Rows.Count; i++)
+            for (int i = 0; i < subActivites.Rows.Count; i++)
             {
                 createSubActivity(Convert.ToString(subActivites.Rows[i]["subActivityName"]), Convert.ToInt32(subActivites.Rows[i]["id"]));
             }
@@ -152,6 +160,9 @@ namespace OJT_Project.Dept._Head_Client
 
         private void btn_addSubActivity_Click(object sender, EventArgs e)
         {
+            MySqlConnection addSubCon = new MySqlConnection(connection.DatabaseConnection);
+            addSubCon.OpenWithWarning();
+
             MySqlCommand selectSubActvitiesWithName = new MySqlCommand("SELECT * FROM `sub_activities` WHERE `status` = 1 AND `subActivityName` = @subActivityName AND `parentActivity_id` = @parentActivityID");
             selectSubActvitiesWithName.Parameters.AddWithValue("@subActivityName", tbx_subActivity.Text.Trim());
             selectSubActvitiesWithName.Parameters.AddWithValue("@parentActivityID", activityList.Rows[cbx_activeActivity.SelectedIndex]["id"]);
@@ -165,31 +176,34 @@ namespace OJT_Project.Dept._Head_Client
             if (tbx_subActivityName.Text.Trim() == "")
             {
                 MessageBox.Show("Cannot make a sub-activity without a name.", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                addSubCon.Close();
                 return;
             }
             //if sub-activity already exists and is active under the current activity, then return
-            else if (connection.parseDataTableFromDB_secure(selectSubActvitiesWithName).Rows.Count > 0)
+            else if (connection.parseDataTableFromDB_secure(selectSubActvitiesWithName, addSubCon).Rows.Count > 0)
             {
                 MessageBox.Show("Activity " + tbx_subActivityName.Text.Trim() + " already exists in your department.", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                addSubCon.Close();
                 return;
             }
             //if sub-activity already exists but is inactive, then reactivate it.
-            else if(connection.parseDataTableFromDB_secure(selectSubActvitiesWithName_inactive).Rows.Count > 0)
+            else if(connection.parseDataTableFromDB_secure(selectSubActvitiesWithName_inactive, addSubCon).Rows.Count > 0)
             {
                 MySqlCommand reactivateSubActivity = new MySqlCommand("UPDATE `sub_activities` SET `status` = 1 WHERE `subActivityName` = @subActivityName");
                 reactivateSubActivity.Parameters.AddWithValue("@subActivityName", tbx_subActivityName.Text.Trim());
                 //connection.executeQuery("UPDATE `sub_activities` SET `status` = 1 WHERE `subActivityName` = '" + tbx_subActivityName.Text.Trim() + "'");
-                connection.executeQuery_secure(reactivateSubActivity);
+                connection.executeQuery_secure(reactivateSubActivity, addSubCon);
             }
             else
             {
                 MySqlCommand insertNewActivity = new MySqlCommand("INSERT INTO `sub_activities` (`subActivityName`, `parentActivity_id`) VALUES (@subActivityName, @parentActivityID)");
                 insertNewActivity.Parameters.AddWithValue("@subActivityName", tbx_subActivityName.Text.Trim());
                 insertNewActivity.Parameters.AddWithValue("@parentActivityID", activityList.Rows[cbx_activeActivity.SelectedIndex]["id"]);
-                connection.executeQuery_secure(insertNewActivity);
+                connection.executeQuery_secure(insertNewActivity, addSubCon);
                 //connection.executeQuery("INSERT INTO `sub_activities` (`subActivityName`, `parentActivity_id`) VALUES ('" + tbx_subActivityName.Text.Trim() + "', " + activityList.Rows[cbx_activeActivity.SelectedIndex]["id"] + ")");
             }
             updateSubActivities(Convert.ToInt32(activityList.Rows[cbx_activeActivity.SelectedIndex]["id"]));
+            addSubCon.Close();
         }
 
         private void btn_deleteActivity_Click(object sender, EventArgs e)
@@ -199,12 +213,15 @@ namespace OJT_Project.Dept._Head_Client
             {
                 return;
             }
+            MySqlConnection deleteActCon = new MySqlConnection(connection.DatabaseConnection);
+            deleteActCon.OpenWithWarning();
+
             //remove the activity from the database
-            connection.executeQuery("UPDATE `activities` SET `status` = 0 WHERE `id` = " + activityList.Rows[cbx_activeActivity.SelectedIndex]["id"]);
+            connection.executeQuery("UPDATE `activities` SET `status` = 0 WHERE `id` = " + activityList.Rows[cbx_activeActivity.SelectedIndex]["id"], deleteActCon);
             //remove child activities from the database
-            connection.executeQuery("UPDATE `sub_activities` SET `status` = 0 WHERE `parentActivity_id` = " + activityList.Rows[cbx_activeActivity.SelectedIndex]["id"]);
+            connection.executeQuery("UPDATE `sub_activities` SET `status` = 0 WHERE `parentActivity_id` = " + activityList.Rows[cbx_activeActivity.SelectedIndex]["id"], deleteActCon);
             //update activity list
-            activityList = connection.parseDataTableFromDB("SELECT * FROM `activities` WHERE `status` = 1 AND `department_id` = " + user.deptID + " ORDER BY `activityName`");
+            activityList = connection.parseDataTableFromDB("SELECT * FROM `activities` WHERE `status` = 1 AND `department_id` = " + user.deptID + " ORDER BY `activityName`", deleteActCon);
             updateActivityDropdown();
         }
     }

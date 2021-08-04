@@ -20,8 +20,10 @@ namespace OJT_Project.Dept._Head_Client
 
         public void updateRoles()
         {
+            MySqlConnection updateRoleCon = new MySqlConnection(connection.DatabaseConnection);
             flp_roleContainer.Controls.Clear();
-            DataTable allRoles = connection.parseDataTableFromDB("SELECT * FROM `roles` WHERE `department_id` = " + user.deptID + " AND `status` = 1 ORDER BY `role`");
+            DataTable allRoles = connection.parseDataTableFromDB("SELECT * FROM `roles` WHERE `department_id` = " + user.deptID + " AND `status` = 1 ORDER BY `role`", updateRoleCon);
+            updateRoleCon.Close();
             for (int i = 0; i < allRoles.Rows.Count; i++)
             {
                 createRole(Convert.ToString(allRoles.Rows[i]["role"]), Convert.ToInt32(allRoles.Rows[i]["id"]));
@@ -89,14 +91,19 @@ namespace OJT_Project.Dept._Head_Client
             {
                 return;
             }
+
+            MySqlConnection updateRoleNameCon = new MySqlConnection(connection.DatabaseConnection);
+            updateRoleNameCon.OpenWithWarning();
+
             tbx.initialText = newName;
             MySqlCommand updateRoleName = new MySqlCommand("UPDATE `roles` SET `role` = @newName WHERE `id` = @id");
             updateRoleName.Parameters.AddWithValue("@newName", newName);
             updateRoleName.Parameters.AddWithValue("@id", id);
 
-            connection.executeQuery_secure(updateRoleName);
+            connection.executeQuery_secure(updateRoleName, updateRoleNameCon);
             //connection.executeQuery("UPDATE `roles` SET `role` = '" + newName + "' WHERE `id` = " + id);
             updateRoles();
+            updateRoleNameCon.Close();
         }
 
         //event for deleting sub activity
@@ -109,8 +116,11 @@ namespace OJT_Project.Dept._Head_Client
             }
             else
             {
-                connection.executeQuery("UPDATE `roles` SET `status` = 0 WHERE `roles`.`id` = " + id);
+                MySqlConnection deleteRoleCon = new MySqlConnection(connection.DatabaseConnection);
+                deleteRoleCon.OpenWithWarning();
+                connection.executeQuery("UPDATE `roles` SET `status` = 0 WHERE `roles`.`id` = " + id, deleteRoleCon);
                 updateRoles();
+                deleteRoleCon.Close();
             }
         }
 
@@ -127,6 +137,9 @@ namespace OJT_Project.Dept._Head_Client
 
         private void btn_addRole_Click(object sender, EventArgs e)
         {
+            MySqlConnection addRoleCon = new MySqlConnection(connection.DatabaseConnection);
+            addRoleCon.OpenWithWarning();
+
             MySqlCommand selectExistingRoles = new MySqlCommand("SELECT * FROM `roles` WHERE `status` = 1 AND `role` = @roleName");
             selectExistingRoles.Parameters.AddWithValue("@roleName", tbx_roleName.Text.Trim());
 
@@ -137,30 +150,33 @@ namespace OJT_Project.Dept._Head_Client
             if (tbx_roleName.Text.Trim() == "")
             {
                 MessageBox.Show("Cannot make a role without a name.", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                addRoleCon.Close();
                 return;
             }
             //if role already exists and is active under the current activity, then return
-            else if (connection.parseDataTableFromDB_secure(selectExistingRoles).Rows.Count > 0)
+            else if (connection.parseDataTableFromDB_secure(selectExistingRoles, addRoleCon).Rows.Count > 0)
             {
                 MessageBox.Show("Role " + tbx_roleName.Text.Trim() + " already exists in your department.", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                addRoleCon.Close();
                 return;
             }
             //if role already exists but is inactive, then reactivate it.
-            else if (connection.parseDataTableFromDB_secure(selectExistingRoles_inactive).Rows.Count > 0)
+            else if (connection.parseDataTableFromDB_secure(selectExistingRoles_inactive, addRoleCon).Rows.Count > 0)
             {
                 MySqlCommand reactivateRole = new MySqlCommand("UPDATE `roles` SET `status` = 1 WHERE `role` = @roleName AND `department_id` = @deptID");
                 reactivateRole.Parameters.AddWithValue("@roleName", tbx_roleName.Text.Trim());
                 reactivateRole.Parameters.AddWithValue("@deptID", user.deptID);
-                connection.executeQuery_secure(reactivateRole);
+                connection.executeQuery_secure(reactivateRole, addRoleCon);
             }
             else
             {
                 MySqlCommand addRole = new MySqlCommand("INSERT INTO `roles` (`role`, `department_id`) VALUES (@roleName, @deptID)");
                 addRole.Parameters.AddWithValue("@rolename", tbx_roleName.Text.Trim());
                 addRole.Parameters.AddWithValue("@deptID", user.deptID);
-                connection.executeQuery_secure(addRole);
+                connection.executeQuery_secure(addRole, addRoleCon);
             }
             updateRoles();
+            addRoleCon.Close();
         }
     }
 }

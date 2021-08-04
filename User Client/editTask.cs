@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using MySql.Data.MySqlClient;
 
 namespace OJT_Project.User_Client
 {
@@ -21,7 +22,10 @@ namespace OJT_Project.User_Client
 
         private void updateDateRange()
         {
-            taskTable = connection.parseDataTableFromDB("SELECT * FROM `tasks` WHERE `user_id` = " + user.id + " ORDER BY `startTime`");
+            MySqlConnection updateCon = new MySqlConnection(connection.DatabaseConnection);
+            updateCon.OpenWithWarning();
+
+            taskTable = connection.parseDataTableFromDB("SELECT * FROM `tasks` WHERE `user_id` = " + user.id + " ORDER BY `startTime`", updateCon);
             if (taskTable.Rows.Count > 0)
             {
                 DateTime startDate = (DateTime)taskTable.Rows[0]["startTime"];
@@ -37,6 +41,7 @@ namespace OJT_Project.User_Client
                 dtp_startDate.Value = DateTime.Today;
                 dtp_endDate.Value = DateTime.Today.AddHours(23.9999f);
             }
+            updateCon.Close();
             updateTasks();
         }
 
@@ -49,10 +54,13 @@ namespace OJT_Project.User_Client
         //update the task view
         private void updateTasks()
         {
+            MySqlConnection updateTaskCon = new MySqlConnection(connection.DatabaseConnection);
+            updateTaskCon.OpenWithWarning();
+
             this.Show();
             flp_taskContainer.Controls.Clear();
             //get all tasks of the user that's within the defined date range
-            taskTable = connection.parseDataTableFromDB("SELECT * FROM `tasks` WHERE `user_id` = " + user.id  + " AND (`startTime` BETWEEN '" + dtp_startDate.Value.ToString("yyyy-MM-dd H:mm:ss") + "' AND '" + dtp_endDate.Value.ToString("yyyy-MM-dd H:mm:ss") + "') ORDER BY `startTime`");
+            taskTable = connection.parseDataTableFromDB("SELECT * FROM `tasks` WHERE `user_id` = " + user.id  + " AND (`startTime` BETWEEN '" + dtp_startDate.Value.ToString("yyyy-MM-dd H:mm:ss") + "' AND '" + dtp_endDate.Value.ToString("yyyy-MM-dd H:mm:ss") + "') ORDER BY `startTime`", updateTaskCon);
             for (int i = 0; i < taskTable.Rows.Count; i++)
             {
                 //add the task radio button to the list
@@ -68,6 +76,7 @@ namespace OJT_Project.User_Client
                 flp_taskContainer.Controls.Add(task);
             }
 
+            updateTaskCon.Close();
         }
 
         private void btn_cancel_Click(object sender, EventArgs e)
@@ -90,6 +99,9 @@ namespace OJT_Project.User_Client
 
         private void btn_removeTask_Click(object sender, EventArgs e)
         {
+            MySqlConnection removeTaskCon = new MySqlConnection(connection.DatabaseConnection);
+            removeTaskCon.OpenWithWarning();
+
             indexedRadioButton checkedTask = globalFunctions.getCheckedRadio(flp_taskContainer);
             //if nothing is selected then prompt the user
             if (checkedTask == null)
@@ -103,7 +115,8 @@ namespace OJT_Project.User_Client
             {
                 return;
             }
-            connection.executeQuery("DELETE FROM `tasks` WHERE `user_id` = " + user.id + " AND `startTime` = '" + checkedTask.stringID + "'");
+            connection.executeQuery("DELETE FROM `tasks` WHERE `user_id` = " + user.id + " AND `startTime` = '" + checkedTask.stringID + "'", removeTaskCon);
+            removeTaskCon.Close();
             updateTasks();
         }
 

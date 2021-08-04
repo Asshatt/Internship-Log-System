@@ -30,6 +30,8 @@ namespace OJT_Project.z_misc
 
         private void enterPassword_Load(object sender, EventArgs e)
         {
+            MySqlConnection passwordCon = new MySqlConnection(connection.DatabaseConnection);
+
             this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             //get the password of the currentUser
             MySqlCommand getPassword = new MySqlCommand();
@@ -48,8 +50,9 @@ namespace OJT_Project.z_misc
                     break;
             }
             getPassword.Parameters.AddWithValue("@id", userID);
-            DataTable userInfo = connection.parseDataTableFromDB_secure(getPassword);
+            DataTable userInfo = connection.parseDataTableFromDB_secure(getPassword, passwordCon);
             correctPassword = Convert.ToString(userInfo.Rows[0][0]);
+            passwordCon.Close();
         }
 
         private void btn_cancel_Click(object sender, EventArgs e)

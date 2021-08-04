@@ -55,7 +55,11 @@ namespace OJT_Project
             }
             query.Parameters.AddWithValue("@username", username);
             //parses profile data from database and caches result
-            DataTable userInfo = connection.parseDataTableFromDB_secure(query);
+            MySqlConnection loginCon = new MySqlConnection(connection.DatabaseConnection);
+            loginCon.OpenWithWarning();
+
+            DataTable userInfo = connection.parseDataTableFromDB_secure(query, loginCon);
+            loginCon.Close();
 
             string output = "";
             //check if user is null before checking password

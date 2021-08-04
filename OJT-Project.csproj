@@ -7,13 +7,13 @@
     <ProjectGuid>{9674D13A-537C-4644-9F5B-7368E91F5F89}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>OJT_Project</RootNamespace>
-    <AssemblyName>OJT-Project</AssemblyName>
+    <AssemblyName>Log System</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>D:\Windows Form Projects\OJT-Project-DistributionRepo\</PublishUrl>
+    <PublishUrl>D:\Windows Form Projects\OJT-Project-DistributionRepo\Schedule-Log-System\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -23,8 +23,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>4</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>

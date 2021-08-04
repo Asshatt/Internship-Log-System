@@ -19,14 +19,17 @@ namespace OJT_Project.Admin_Client
 
         public updateDepartments(int id)
         {
+            MySqlConnection updateDeptCon = new MySqlConnection(connection.DatabaseConnection);
+            updateDeptCon.OpenWithWarning();
+
             deptID = id;
             //search for info of current department
             MySqlCommand searchForDeptInfo = new MySqlCommand("SELECT * FROM `departments` WHERE `id` = @deptID");
             searchForDeptInfo.Parameters.AddWithValue("@deptID", deptID);
-            deptInfo = connection.parseDataTableFromDB_secure(searchForDeptInfo);
+            deptInfo = connection.parseDataTableFromDB_secure(searchForDeptInfo, updateDeptCon);
 
-            deptHeads = connection.parseDataTableFromDB("SELECT * FROM `department_heads` WHERE `status` = 1");
-
+            deptHeads = connection.parseDataTableFromDB("SELECT * FROM `department_heads` WHERE `status` = 1", updateDeptCon);
+            updateDeptCon.Close();
             InitializeComponent();
         }
 
@@ -57,6 +60,8 @@ namespace OJT_Project.Admin_Client
 
         private void btn_addDepartment_Click(object sender, EventArgs e)
         {
+            MySqlConnection addDeptCon = new MySqlConnection(connection.DatabaseConnection);
+            addDeptCon.OpenWithWarning();
             //if department head changed
             if (deptInfo.Rows[0]["head_id"] != deptHeads.Rows[cbx_deptHead.SelectedIndex]["id"])
             {
@@ -64,18 +69,19 @@ namespace OJT_Project.Admin_Client
                 MySqlCommand setNewDepartmentHeadID = new MySqlCommand("UPDATE `department_heads` SET `department_id` = @deptID WHERE `id` = @id");
                 setNewDepartmentHeadID.Parameters.AddWithValue("@deptID", deptID);
                 setNewDepartmentHeadID.Parameters.AddWithValue("@id", deptHeads.Rows[cbx_deptHead.SelectedIndex]["id"]);
-                connection.executeQuery_secure(setNewDepartmentHeadID);
+                connection.executeQuery_secure(setNewDepartmentHeadID, addDeptCon);
 
                 MySqlCommand setOldDepartmentHeadID = new MySqlCommand("UPDATE `department_heads` SET `department_id` = 0 WHERE `id` = @id");
                 setOldDepartmentHeadID.Parameters.AddWithValue("@id", deptInfo.Rows[0]["head_id"]);
-                connection.executeQuery_secure(setOldDepartmentHeadID);
+                connection.executeQuery_secure(setOldDepartmentHeadID, addDeptCon);
             }
 
             MySqlCommand updateDepartment = new MySqlCommand("UPDATE `departments` SET `head_id` = @headID, `deptName` = @deptName WHERE `id` = @deptID");
             updateDepartment.Parameters.AddWithValue("@headID", deptHeads.Rows[cbx_deptHead.SelectedIndex]["id"]);
             updateDepartment.Parameters.AddWithValue("@deptName", tbx_deptName.Text.Trim());
             updateDepartment.Parameters.AddWithValue("@deptID", deptID);
-            connection.executeQuery_secure(updateDepartment);
+            connection.executeQuery_secure(updateDepartment, addDeptCon);
+            addDeptCon.Close();
             this.Close();
         }
     }

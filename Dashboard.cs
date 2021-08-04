@@ -26,6 +26,9 @@ namespace OJT_Project
 
         private void dashboard_Load(object sender, EventArgs e)
         {
+            MySqlConnection dashLoadCon = new MySqlConnection(connection.DatabaseConnection);
+            dashLoadCon.OpenWithWarning();
+
             this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             //display tasks
             switch (user.permissionLevel) 
@@ -33,7 +36,7 @@ namespace OJT_Project
                 //User
                 case 0:
                     //get all tasks corresponding to the current user ID and cache the results
-                    DataTable myTasks = connection.parseDataTableFromDB(userDashboardQuery);
+                    DataTable myTasks = connection.parseDataTableFromDB(userDashboardQuery, dashLoadCon);
                     drawTaskPreview(myTasks);
 
                     tcl_previewControls.TabPages.RemoveAt(2);
@@ -47,7 +50,7 @@ namespace OJT_Project
 
                 //Department Head
                 case 1:
-                    DataTable deptTasks = connection.parseDataTableFromDB(deptHeadDashboardQuery);
+                    DataTable deptTasks = connection.parseDataTableFromDB(deptHeadDashboardQuery, dashLoadCon);
                     drawTaskPreview(deptTasks);
 
                     tcl_previewControls.TabPages.RemoveAt(1);
@@ -75,13 +78,16 @@ namespace OJT_Project
                     MessageBox.Show("What the fuck");
                     break;
             }
-
+            dashLoadCon.Close();
             updateDashboard();
         }
 
         //draws dashboard
         private void drawTaskPreview(DataTable data) 
         {
+            MySqlConnection drawTaskPreview = new MySqlConnection(connection.DatabaseConnection);
+            drawTaskPreview.OpenWithWarning();
+
             //set userinfo label
             lbl_userInfo.Text = "Current User: " + user.username + ", " + user.email;
 
@@ -100,7 +106,7 @@ namespace OJT_Project
                 if (columns.Contains("user_id"))
                 {
                     //replace all user IDs with their usernames
-                    drawnTasks.Rows[i]["username"] = connection.parseDataTableFromDB("SELECT `username` FROM `users` WHERE `id` = " + drawnTasks.Rows[i]["user_id"]).Rows[0]["username"];
+                    drawnTasks.Rows[i]["username"] = connection.parseDataTableFromDB("SELECT `username` FROM `users` WHERE `id` = " + drawnTasks.Rows[i]["user_id"], drawTaskPreview).Rows[0]["username"];
                 }
                 else
                 {
@@ -113,7 +119,7 @@ namespace OJT_Project
                 {
                     MySqlCommand selectDepartmentName = new MySqlCommand("SELECT `deptName` FROM `departments` WHERE `id` = @id");
                     selectDepartmentName.Parameters.AddWithValue("@id", drawnTasks.Rows[i]["department_id"]);
-                    string departmentName = Convert.ToString(connection.parseDataTableFromDB_secure(selectDepartmentName).Rows[0][0]);
+                    string departmentName = Convert.ToString(connection.parseDataTableFromDB_secure(selectDepartmentName, drawTaskPreview).Rows[0][0]);
 
                     drawnTasks.Rows[i]["department"] = departmentName;
                 }
@@ -133,15 +139,19 @@ namespace OJT_Project
             if (columns.Contains("department_id")) { drawnTasks.Columns.Remove("department_id"); }
 
             dgv_taskPreview.DataSource = drawnTasks;
+            drawTaskPreview.Close();
             globalFunctions.updateDataGridViewStyle(dgv_taskPreview);
         }
 
         private void drawUserPreview()
         {
+            MySqlConnection userPrevCon = new MySqlConnection(connection.DatabaseConnection);
+            userPrevCon.OpenWithWarning();
+
             //parse all 3 user tables and draw the user previes
-            DataTable users = connection.parseDataTableFromDB("SELECT `username`, `email`, `department_id`, `role_id` FROM `users` WHERE `status` = 1 ORDER BY `id`");
-            DataTable deptHeads = connection.parseDataTableFromDB("SELECT `username`, `email`, `department_id` FROM `department_heads` WHERE `status` = 1 AND `id` != 0 ORDER BY `id`");
-            DataTable admins = connection.parseDataTableFromDB("SELECT `username`, `email` FROM `admins` WHERE `status` = 1 ORDER BY `id`");
+            DataTable users = connection.parseDataTableFromDB("SELECT `username`, `email`, `department_id`, `role_id` FROM `users` WHERE `status` = 1 ORDER BY `id`", userPrevCon);
+            DataTable deptHeads = connection.parseDataTableFromDB("SELECT `username`, `email`, `department_id` FROM `department_heads` WHERE `status` = 1 AND `id` != 0 ORDER BY `id`", userPrevCon);
+            DataTable admins = connection.parseDataTableFromDB("SELECT `username`, `email` FROM `admins` WHERE `status` = 1 ORDER BY `id`", userPrevCon);
 
             #region Users
             ///BEGIN USERS///
@@ -152,8 +162,8 @@ namespace OJT_Project
             //set department id and role id 
             for (int i = 0; i < users.Rows.Count; i++)
             {
-                users.Rows[i]["department"] = connection.parseDataTableFromDB("SELECT `deptName` FROM `departments` WHERE `id` = " + users.Rows[i]["department_id"]).Rows[0]["deptName"];
-                users.Rows[i]["role"] = connection.parseDataTableFromDB("SELECT `role` FROM `roles` WHERE `id` = " + users.Rows[i]["role_id"]).Rows[0]["role"];
+                users.Rows[i]["department"] = connection.parseDataTableFromDB("SELECT `deptName` FROM `departments` WHERE `id` = " + users.Rows[i]["department_id"], userPrevCon).Rows[0]["deptName"];
+                users.Rows[i]["role"] = connection.parseDataTableFromDB("SELECT `role` FROM `roles` WHERE `id` = " + users.Rows[i]["role_id"], userPrevCon).Rows[0]["role"];
             }
 
             //remove id columns
@@ -173,7 +183,7 @@ namespace OJT_Project
             //set department id
             for(int i = 0; i < deptHeads.Rows.Count; i++)
             {
-                deptHeads.Rows[i]["department"] = connection.parseDataTableFromDB("SELECT `deptName` FROM `departments` WHERE `id` = " + deptHeads.Rows[i]["department_id"]).Rows[0]["deptName"];
+                deptHeads.Rows[i]["department"] = connection.parseDataTableFromDB("SELECT `deptName` FROM `departments` WHERE `id` = " + deptHeads.Rows[i]["department_id"], userPrevCon).Rows[0]["deptName"];
             }
 
             //remove dept id column
@@ -186,6 +196,8 @@ namespace OJT_Project
 
             dgv_admins.DataSource = admins;
             globalFunctions.updateDataGridViewStyle(dgv_admins);
+
+            userPrevCon.Close();
         }
 
         private void btn_addTask_Click(object sender, EventArgs e)
@@ -199,18 +211,21 @@ namespace OJT_Project
         //call whenever the task preview needs to be updated
         private void updateDashboard() 
         {
+            MySqlConnection updateCon = new MySqlConnection(connection.DatabaseConnection);
+            updateCon.OpenWithWarning();
+
             this.Show();
             //change query based on permission level of current user
             switch (user.permissionLevel) 
             {
                 //Users
                 case 0:
-                    DataTable updatedTasks = connection.parseDataTableFromDB(userDashboardQuery);
+                    DataTable updatedTasks = connection.parseDataTableFromDB(userDashboardQuery, updateCon);
                     drawTaskPreview(updatedTasks);
                    
                     #region duration for today
                     //calculate total duration for today
-                    DataTable tasksForToday = connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + user.id + " AND (`startTime` BETWEEN '" + DateTime.Today.ToString(globalFunctions.sqlDateFormat) + "' AND '" + DateTime.Today.AddHours(23.9999).ToString(globalFunctions.sqlDateFormat) + "')");
+                    DataTable tasksForToday = connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + user.id + " AND (`startTime` BETWEEN '" + DateTime.Today.ToString(globalFunctions.sqlDateFormat) + "' AND '" + DateTime.Today.AddHours(23.9999).ToString(globalFunctions.sqlDateFormat) + "')", updateCon);
                     float totalDurationToday = 0;
                     try
                     {
@@ -240,7 +255,7 @@ namespace OJT_Project
                     for(int i = 0; i < weekLabels.Length; i++)
                     {
                         //Console.WriteLine("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + user.id + " AND (`startTime` BETWEEN '" + DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays(i).ToString(globalFunctions.sqlDateFormat) + "' AND '" + DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays(i).AddHours(23.9999f).ToString(globalFunctions.sqlDateFormat) + "')");
-                        DataTable taskForTheWeek = connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + user.id + " AND (`startTime` BETWEEN '" + DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays(i).ToString(globalFunctions.sqlDateFormat) +"' AND '" + DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays(i).AddHours(23.9999f).ToString(globalFunctions.sqlDateFormat) + "')");
+                        DataTable taskForTheWeek = connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + user.id + " AND (`startTime` BETWEEN '" + DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays(i).ToString(globalFunctions.sqlDateFormat) +"' AND '" + DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays(i).AddHours(23.9999f).ToString(globalFunctions.sqlDateFormat) + "')", updateCon);
                         float duration = 0;
                         try
                         {
@@ -257,7 +272,7 @@ namespace OJT_Project
 
                     #region duration for this month
                     //calculate total duration for this month
-                    DataTable tasksForThisMonth = connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + user.id + " AND (`startTime` BETWEEN '" + new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString(globalFunctions.sqlDateFormat) + "' AND '" + new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(1).AddDays(-1).AddHours(23.9999f).ToString(globalFunctions.sqlDateFormat) + "')");
+                    DataTable tasksForThisMonth = connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + user.id + " AND (`startTime` BETWEEN '" + new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString(globalFunctions.sqlDateFormat) + "' AND '" + new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(1).AddDays(-1).AddHours(23.9999f).ToString(globalFunctions.sqlDateFormat) + "')", updateCon);
                     float totalDurationThisMonth = 0;
                     try
                     {
@@ -282,21 +297,21 @@ namespace OJT_Project
                 
                 //Dept. Heads
                 case 1:
-                    DataTable updatedDeptTasks = connection.parseDataTableFromDB(deptHeadDashboardQuery);
+                    DataTable updatedDeptTasks = connection.parseDataTableFromDB(deptHeadDashboardQuery, updateCon);
                     drawTaskPreview(updatedDeptTasks);
 
                     #region draw pie chart
                     pie_roleSummary.Series["s1"].Points.Clear();
 
                     //get a datatable of all roles in the current department
-                    DataTable roles = connection.parseDataTableFromDB("SELECT * FROM `roles` WHERE `status` = 1 AND `department_id` = " + user.deptID);
+                    DataTable roles = connection.parseDataTableFromDB("SELECT * FROM `roles` WHERE `status` = 1 AND `department_id` = " + user.deptID, updateCon);
                     
                     //iterate through the roles
                     for (int i = 0; i < roles.Rows.Count; i++)
                     {
                         float duration = 0;
                         //get all active user IDs assigned to the current role 
-                        DataTable users = connection.parseDataTableFromDB("SELECT `id` FROM `users` WHERE `status` = 1 AND `role_id` = " + roles.Rows[i]["id"]);
+                        DataTable users = connection.parseDataTableFromDB("SELECT `id` FROM `users` WHERE `status` = 1 AND `role_id` = " + roles.Rows[i]["id"], updateCon);
                         
                         //iterate through the users in the table
                         for(int j = 0; j < users.Rows.Count; j++)
@@ -305,7 +320,7 @@ namespace OJT_Project
                             //DataTable currentUserTasks = connection.parseDataTableFromDB("SELECT `duration` FROM `tasks` WHERE `user_id` = " + users.Rows[j]["id"]);
 
                             //add the duration of all the tasks 
-                            duration = float.Parse(Convert.ToString(connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + users.Rows[j]["id"]).Rows[0][0]));
+                            duration = float.Parse(Convert.ToString(connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + users.Rows[j]["id"], updateCon).Rows[0][0]));
                         }
                         //after all that shit, add the points to the pie chart
                         if (duration > 0)
@@ -317,7 +332,7 @@ namespace OJT_Project
 
                     #region draw activity summary
                     //select activities from department
-                    DataTable activities = connection.parseDataTableFromDB("SELECT * FROM `activities` WHERE `status` = 1 AND `department_id` = " + user.deptID + " ORDER BY `activityName`");
+                    DataTable activities = connection.parseDataTableFromDB("SELECT * FROM `activities` WHERE `status` = 1 AND `department_id` = " + user.deptID + " ORDER BY `activityName`", updateCon);
                     //add tabs for each activity
                     tcl_activityTabs.TabPages.Clear();
                     for(int i = 0; i < activities.Rows.Count; i++)
@@ -344,7 +359,7 @@ namespace OJT_Project
                         subActivitySummary.Columns.Add("Duration");
 
                         //get all subactivities of the current activity
-                        DataTable subActivities = connection.parseDataTableFromDB("SELECT `subActivityName` from `sub_activities` WHERE `status` = 1 AND `parentActivity_id` = " + activities.Rows[i]["id"]);
+                        DataTable subActivities = connection.parseDataTableFromDB("SELECT `subActivityName` from `sub_activities` WHERE `status` = 1 AND `parentActivity_id` = " + activities.Rows[i]["id"], updateCon);
                         
                         for(int j = 0; j < subActivities.Rows.Count; j++)
                         {
@@ -352,7 +367,7 @@ namespace OJT_Project
                             //get all tasks with the currently selected sub activity
                             try
                             {
-                                duration = float.Parse(Convert.ToString(connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `subActivity` = '" + subActivities.Rows[j]["subActivityName"] + "'").Rows[0][0]));
+                                duration = float.Parse(Convert.ToString(connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `subActivity` = '" + subActivities.Rows[j]["subActivityName"] + "'", updateCon).Rows[0][0]));
                             }
                             catch
                             {
@@ -376,7 +391,7 @@ namespace OJT_Project
                     //select all users from the current department
                     MySqlCommand selectUsersInDatabase = new MySqlCommand("SELECT * FROM `users` WHERE `department_id` = @deptID AND `status` = 1");
                     selectUsersInDatabase.Parameters.AddWithValue("@deptID", user.deptID);
-                    DataTable usersInDept = connection.parseDataTableFromDB_secure(selectUsersInDatabase);
+                    DataTable usersInDept = connection.parseDataTableFromDB_secure(selectUsersInDatabase, updateCon);
 
                     //for every user in the table
                     for(int i = 0; i < usersInDept.Rows.Count; i++)
@@ -387,7 +402,7 @@ namespace OJT_Project
                         //add all the task durations assigned to the currently selected user
                         MySqlCommand selectSumOfAllUserTasks = new MySqlCommand("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = @id");
                         selectSumOfAllUserTasks.Parameters.AddWithValue("@id", usersInDept.Rows[i]["id"]);
-                        DataTable durationSum = connection.parseDataTableFromDB_secure(selectSumOfAllUserTasks);
+                        DataTable durationSum = connection.parseDataTableFromDB_secure(selectSumOfAllUserTasks, updateCon);
 
                         //get duration into a float
                         float duration = float.Parse(Convert.ToString(durationSum.Rows[0][0]));
@@ -409,7 +424,7 @@ namespace OJT_Project
                     float totalManHours = 0;
                     try
                     {
-                        totalManHours = float.Parse(Convert.ToString(connection.parseDataTableFromDB_secure(selectTasksInDept).Rows[0][0]));
+                        totalManHours = float.Parse(Convert.ToString(connection.parseDataTableFromDB_secure(selectTasksInDept, updateCon).Rows[0][0]));
                     }
                     catch
                     {
@@ -429,13 +444,13 @@ namespace OJT_Project
                 //Admins
                 case 2:
                     MySqlCommand selectAllTasks = new MySqlCommand("SELECT `user_id`, `department_id`, `startTime`, `duration`, `activity`, `subActivity`, `action` FROM `tasks` ORDER BY `startTime`");
-                    DataTable allTasks = connection.parseDataTableFromDB_secure(selectAllTasks);
+                    DataTable allTasks = connection.parseDataTableFromDB_secure(selectAllTasks, updateCon);
 
                     //draw department filter combobox
                     cbx_adminDepartmentFilter.Items.Clear();
                     cbx_adminDepartmentFilter.Items.Add("All Departments");
                     cbx_adminDepartmentFilter.SelectedIndex = 0;
-                    allDepartments = connection.parseDataTableFromDB("SELECT * FROM `departments` WHERE `status` = 1");
+                    allDepartments = connection.parseDataTableFromDB("SELECT * FROM `departments` WHERE `status` = 1", updateCon);
                     for(int i = 0; i < allDepartments.Rows.Count; i++)
                     {
                         cbx_adminDepartmentFilter.Items.Add(allDepartments.Rows[i]["deptName"]);
@@ -445,6 +460,8 @@ namespace OJT_Project
                     drawUserPreview();
                     break;
             }
+
+            updateCon.Close();
             /*
             DataTable updatedTasks = connection.parseDataTableFromDB(query);
             drawTaskPreview(updatedTasks);*/
@@ -511,6 +528,9 @@ namespace OJT_Project
 
         private void updateCurrentUserInfo()
         {
+            MySqlConnection updateInfo = new MySqlConnection(connection.DatabaseConnection);
+            updateInfo.OpenWithWarning();
+
             MySqlCommand searchForUser = new MySqlCommand();
             //function to update the variables of the user static class
             switch (user.permissionLevel)
@@ -528,9 +548,10 @@ namespace OJT_Project
                     break;
             }
             searchForUser.Parameters.AddWithValue("@id", user.id);
-            DataTable updatedUserInfo = connection.parseDataTableFromDB_secure(searchForUser);
+            DataTable updatedUserInfo = connection.parseDataTableFromDB_secure(searchForUser, updateInfo);
             user.username = updatedUserInfo.Rows[0]["username"].ToString();
             user.email = updatedUserInfo.Rows[0]["email"].ToString();
+            updateInfo.Close();
             updateDashboard();
             this.Show();
         }
@@ -545,17 +566,21 @@ namespace OJT_Project
 
         private void cbx_adminDepartmentFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
+            MySqlConnection filterCon = new MySqlConnection(connection.DatabaseConnection);
+            filterCon.OpenWithWarning();
+
             DataTable drawnTasks = new DataTable();
             if (cbx_adminDepartmentFilter.SelectedIndex == 0)
             {
-                drawnTasks = connection.parseDataTableFromDB_secure(new MySqlCommand("SELECT `user_id`, `department_id`, `startTime`, `duration`, `activity`, `subActivity`, `action` FROM `tasks` ORDER BY `startTime`"));
+                drawnTasks = connection.parseDataTableFromDB_secure(new MySqlCommand("SELECT `user_id`, `department_id`, `startTime`, `duration`, `activity`, `subActivity`, `action` FROM `tasks` ORDER BY `startTime`"), filterCon);
             }
             else
             {
                 MySqlCommand getFromDepartment = new MySqlCommand("SELECT `user_id`, `department_id`, `startTime`, `duration`, `activity`, `subActivity`, `action` FROM `tasks` WHERE `department_id` = @deptID ORDER BY `startTime`");
                 getFromDepartment.Parameters.AddWithValue("@deptID", allDepartments.Rows[cbx_adminDepartmentFilter.SelectedIndex - 1]["id"]);
-                drawnTasks = connection.parseDataTableFromDB_secure(getFromDepartment);
+                drawnTasks = connection.parseDataTableFromDB_secure(getFromDepartment, filterCon);
             }
+            filterCon.Close();
             drawTaskPreview(drawnTasks);
         }
 

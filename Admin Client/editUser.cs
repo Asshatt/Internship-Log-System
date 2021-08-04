@@ -30,6 +30,9 @@ namespace OJT_Project.Admin_Client
 
         private void updateList()
         {
+            MySqlConnection updateListCon = new MySqlConnection(connection.DatabaseConnection);
+            updateListCon.OpenWithWarning();
+
             this.Show();
 
             //flp_users.Controls.Clear();
@@ -37,7 +40,7 @@ namespace OJT_Project.Admin_Client
             flp_admins.Controls.Clear();
 
             //add radio buttons for users
-            DataTable departments = connection.parseDataTableFromDB_secure( new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `departments` WHERE `status` = 1 ORDER BY `id`"));
+            DataTable departments = connection.parseDataTableFromDB_secure( new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `departments` WHERE `status` = 1 ORDER BY `id`"), updateListCon);
 
 
             tcl_users.TabPages.Clear();
@@ -61,7 +64,7 @@ namespace OJT_Project.Admin_Client
                 MySql.Data.MySqlClient.MySqlCommand getUsersInDepartment = new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `users` WHERE `status` = 1 AND `department_id` = @deptID ORDER BY `username`");
                 getUsersInDepartment.Parameters.AddWithValue("@deptID", departments.Rows[i]["id"]);
 
-                DataTable usersInDepartment = connection.parseDataTableFromDB_secure(getUsersInDepartment);
+                DataTable usersInDepartment = connection.parseDataTableFromDB_secure(getUsersInDepartment, updateListCon);
                 
                 for(int j = 0; j < usersInDepartment.Rows.Count; j++)
                 {
@@ -76,12 +79,12 @@ namespace OJT_Project.Admin_Client
             }
 
             //add radio buttons for department heads
-            DataTable deptHeads = connection.parseDataTableFromDB_secure(new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `department_heads` WHERE `status` = 1 AND `id` != 0"));
+            DataTable deptHeads = connection.parseDataTableFromDB_secure(new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `department_heads` WHERE `status` = 1 AND `id` != 0"), updateListCon);
 
             for (int i = 0; i < deptHeads.Rows.Count; i++)
             {
                 userRadioButton user = new userRadioButton();
-                user.Text = deptHeads.Rows[i]["username"] + " [Head of " + connection.parseDataTableFromDB("SELECT `deptName` FROM `departments` WHERE `id` = " + deptHeads.Rows[i]["department_id"]).Rows[0]["deptName"] + "]";
+                user.Text = deptHeads.Rows[i]["username"] + " [Head of " + connection.parseDataTableFromDB("SELECT `deptName` FROM `departments` WHERE `id` = " + deptHeads.Rows[i]["department_id"], updateListCon).Rows[0]["deptName"] + "]";
                 user.userId = Convert.ToInt32(deptHeads.Rows[i]["id"]);
                 user.userPermLevel = 1;
                 user.AutoSize = true;
@@ -90,7 +93,7 @@ namespace OJT_Project.Admin_Client
             }
 
             //add radio buttons for admins
-            DataTable admins = connection.parseDataTableFromDB_secure(new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `admins` WHERE `status` = 1"));
+            DataTable admins = connection.parseDataTableFromDB_secure(new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `admins` WHERE `status` = 1"), updateListCon);
 
             for (int i = 0; i < admins.Rows.Count; i++)
             {
@@ -102,6 +105,7 @@ namespace OJT_Project.Admin_Client
                 user.AutoEllipsis = false;
                 flp_admins.Controls.Add(user);
             }
+            updateListCon.Close();
         }
 
         private void btn_updateUser_Click(object sender, EventArgs e)
@@ -145,6 +149,9 @@ namespace OJT_Project.Admin_Client
             DialogResult result = MessageBox.Show("Are you sure you want to deactivate this user?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
             if (result == DialogResult.Yes)
             {
+                MySqlConnection deactivateUserCon = new MySqlConnection(connection.DatabaseConnection);
+                deactivateUserCon.OpenWithWarning();
+
                 MySql.Data.MySqlClient.MySqlCommand deleteUser = new MySql.Data.MySqlClient.MySqlCommand();
                 //remove the selected user from the database
                 switch (selectedRadioButton.userPermLevel) 
@@ -164,7 +171,7 @@ namespace OJT_Project.Admin_Client
                         //connection.executeQuery("UPDATE `departments` SET `head_id` = 0 WHERE `head_id` = " + selectedRadioButton.userId);
                         MySqlCommand updateDept = new MySqlCommand("UPDATE `departments` SET `head_id` = 0 WHERE `head_id` = @headID");
                         updateDept.Parameters.AddWithValue("@headID", selectedRadioButton.userId);
-                        connection.executeQuery_secure(updateDept);
+                        connection.executeQuery_secure(updateDept, deactivateUserCon);
                         break;
 
                     //Admin
@@ -174,7 +181,8 @@ namespace OJT_Project.Admin_Client
                         break;
                 }
                 deleteUser.Parameters.AddWithValue("@id", selectedRadioButton.userId);
-                connection.executeQuery_secure(deleteUser);
+                connection.executeQuery_secure(deleteUser, deactivateUserCon);
+                deactivateUserCon.Close();
             }
             updateList();
         }

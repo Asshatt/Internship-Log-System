@@ -83,20 +83,28 @@ namespace OJT_Project.Dept._Head_Client
         {
             this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             updateActivityHolder();
-            lbl_departmentInfo.Text = Convert.ToString(connection.parseDataTableFromDB("SELECT * FROM `departments` WHERE `id` = " + user.deptID).Rows[0]["deptName"]);
+
+            MySqlConnection load = new MySqlConnection(connection.DatabaseConnection);
+            load.OpenWithWarning();
+
+            lbl_departmentInfo.Text = Convert.ToString(connection.parseDataTableFromDB("SELECT * FROM `departments` WHERE `id` = " + user.deptID, load).Rows[0]["deptName"]);
+            load.Close();
         }
 
         private void updateActivityHolder()
         {
+            MySqlConnection updateActHolderCon = new MySqlConnection(connection.DatabaseConnection);
+            updateActHolderCon.OpenWithWarning();
+
             flp_activityList.Controls.Clear();
             //pareses database for all activities corresponding to the user's department 
-            activities = connection.parseDataTableFromDB("SELECT * FROM `activities` WHERE `status` = 1 AND `department_id` = " + user.deptID + " ORDER BY `activityName`");
+            activities = connection.parseDataTableFromDB("SELECT * FROM `activities` WHERE `status` = 1 AND `department_id` = " + user.deptID + " ORDER BY `activityName`", updateActHolderCon);
 
             //creates an activity holder for all activities 
             for (int i = 0; i < activities.Rows.Count; i++)
             {
                 //pareses through all sub activities of each activity
-                DataTable subActivities = connection.parseDataTableFromDB("SELECT `id` FROM `sub_activities` WHERE `status` = 1 AND `parentActivity_id` = " + activities.Rows[i]["id"]);
+                DataTable subActivities = connection.parseDataTableFromDB("SELECT `id` FROM `sub_activities` WHERE `status` = 1 AND `parentActivity_id` = " + activities.Rows[i]["id"], updateActHolderCon);
                 string info = activities.Rows[i]["activityName"] + " [Contains " + subActivities.Rows.Count;
                 if (subActivities.Rows.Count == 1)
                 {
@@ -108,10 +116,14 @@ namespace OJT_Project.Dept._Head_Client
                 }
                 createActivityHolder(Convert.ToInt32(activities.Rows[i]["id"]), info);
             }
+            updateActHolderCon.Close();
         }
 
         private void btn_addActivity_Click(object sender, EventArgs e)
         {
+            MySqlConnection addActCon = new MySqlConnection(connection.DatabaseConnection);
+            addActCon.OpenWithWarning();
+
             //define commands for the 2 else if statements
             MySqlCommand selectActiveWithSameName = new MySqlCommand("SELECT * FROM `activities` WHERE `status` = 1 AND `activityName` = @activityName AND `department_id` = @deptID");
             selectActiveWithSameName.Parameters.AddWithValue("@activityName", tbx_activityName.Text.Trim());
@@ -126,22 +138,25 @@ namespace OJT_Project.Dept._Head_Client
             if (tbx_activityName.Text.Trim() == "") 
             {
                 MessageBox.Show("Cannot make an activity without a name.", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                addActCon.Close();
                 return;
             }
-            else if (connection.parseDataTableFromDB_secure(selectActiveWithSameName).Rows.Count > 0)
+            else if (connection.parseDataTableFromDB_secure(selectActiveWithSameName, addActCon).Rows.Count > 0)
             {
                 MessageBox.Show("Activity " + tbx_activityName.Text.Trim() + " already exists in your department.", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                addActCon.Close();
                 return;
             }
             //if activity is in database, but deactivated, reactivate it
-            else if(connection.parseDataTableFromDB_secure(selectActiveWithSameName_inactive).Rows.Count > 0)
+            else if(connection.parseDataTableFromDB_secure(selectActiveWithSameName_inactive, addActCon).Rows.Count > 0)
             {
                 //connection.executeQuery("UPDATE `activities` SET `status` = 1 WHERE `activityName` = '" + tbx_activityName.Text.Trim() + "' AND `department_id` = " + user.deptID);
                 MySqlCommand updateActivity = new MySqlCommand("UPDATE `activities` SET `status` = 1 WHERE `activityName` = @activityName AND `department_id` = @userID");
                 updateActivity.Parameters.AddWithValue("@activityName", tbx_activityName.Text.Trim());
                 updateActivity.Parameters.AddWithValue("@userID", user.deptID);
-                connection.executeQuery_secure(updateActivity);
+                connection.executeQuery_secure(updateActivity, addActCon);
                 updateActivityHolder();
+                addActCon.Close();
                 return;
             }
             else
@@ -150,9 +165,10 @@ namespace OJT_Project.Dept._Head_Client
                 insertNewActivity.Parameters.AddWithValue("@activityName", tbx_activityName.Text.Trim());
                 insertNewActivity.Parameters.AddWithValue("@deptID", user.deptID);
                 //connection.executeQuery("INSERT INTO `activities` (`activityName`, `department_id`) VALUES ('" + tbx_activityName.Text.Trim() + "', " + user.deptID + ")");
-                connection.executeQuery_secure(insertNewActivity);
+                connection.executeQuery_secure(insertNewActivity, addActCon);
             }
             updateActivityHolder();
+            addActCon.Close();
         }
 
         private void btn_cancel_Click(object sender, EventArgs e)

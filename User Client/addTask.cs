@@ -31,19 +31,26 @@ namespace OJT_Project.User_Client
 
         private void addTask_Load(object sender, EventArgs e)
         {
+            MySqlConnection loadCon = new MySqlConnection(connection.DatabaseConnection);
+            loadCon.OpenWithWarning();
+
             this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-            activities = connection.parseDataTableFromDB("SELECT * FROM `activities` WHERE `status` = 1 AND `department_id` = " + user.deptID);
+            activities = connection.parseDataTableFromDB("SELECT * FROM `activities` WHERE `status` = 1 AND `department_id` = " + user.deptID, loadCon);
             globalFunctions.addDbInfoToComboBox(cbx_activity, activities, "activityName");
             /*
             dtp_startTime.Format = DateTimePickerFormat.Custom;
             dtp_startTime.CustomFormat = "mm-dd-yyy | hh:mm:ss";
             dtp_endTime.Format = DateTimePickerFormat.Custom;*/
+            loadCon.Close();
         }
 
         private void cbx_activity_SelectedIndexChanged(object sender, EventArgs e)
         {
-            subActivities = connection.parseDataTableFromDB("SELECT * FROM `sub_activities` WHERE `status` = 1 AND `parentActivity_id` = " + activities.Rows[cbx_activity.SelectedIndex]["id"]);
+            MySqlConnection indexChangeCon = new MySqlConnection(connection.DatabaseConnection);
+            indexChangeCon.OpenWithWarning();
+            subActivities = connection.parseDataTableFromDB("SELECT * FROM `sub_activities` WHERE `status` = 1 AND `parentActivity_id` = " + activities.Rows[cbx_activity.SelectedIndex]["id"], indexChangeCon);
             globalFunctions.addDbInfoToComboBox(cbx_subActivity, subActivities, "subActivityName");
+            indexChangeCon.Close();
         }
 
         private void btn_addTask_Click(object sender, EventArgs e)
@@ -65,16 +72,21 @@ namespace OJT_Project.User_Client
                 return;
             }
 
+            MySqlConnection addTaskCon = new MySqlConnection(connection.DatabaseConnection);
+            addTaskCon.OpenWithWarning();
+
             //check if there is another task from the same user at the same time
-            if (connection.parseDataTableFromDB("SELECT * FROM `tasks` WHERE `user_id` = " + user.id + " AND `startTime` = '" + startTime.ToString("yyyy-MM-dd H:mm:ss") + "'").Rows.Count > 0) 
+            if (connection.parseDataTableFromDB("SELECT * FROM `tasks` WHERE `user_id` = " + user.id + " AND `startTime` = '" + startTime.ToString("yyyy-MM-dd H:mm:ss") + "'", addTaskCon).Rows.Count > 0) 
             {
                 MessageBox.Show("You already have an assigned task for that time. Choose another start time.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                addTaskCon.Close();
                 return;
             }
 
             if (cbx_activity.SelectedIndex == -1 || cbx_subActivity.SelectedIndex == -1)
             {
                 MessageBox.Show("Please select an activity and sub-activity.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                addTaskCon.Close();
                 return;
             }
 
@@ -90,13 +102,14 @@ namespace OJT_Project.User_Client
             insertTask.Parameters.AddWithValue("@subActivity", subActivities.Rows[cbx_subActivity.SelectedIndex]["subActivityName"]);
             insertTask.Parameters.AddWithValue("@action", tbx_action.Text.Trim());
 
-            connection.executeQuery_secure(insertTask);
+            connection.executeQuery_secure(insertTask, addTaskCon);
             /*
             connection.executeQuery("INSERT INTO `tasks` (`user_id`, `department_id`, `startTime`, `endTime`, `duration`, `activity`, `subActivity`, `action`) VALUES (" +
                 user.id + ", " + user.deptID + ", '" + startTime.ToString("yyyy-MM-dd H:mm:ss") + "', '" + endTime.ToString("yyyy-MM-dd H:mm:ss") + "', " + duration + ", '" + activities.Rows[cbx_activity.SelectedIndex]["activityName"] +
                 "', '" + subActivities.Rows[cbx_subActivity.SelectedIndex]["subActivityName"] + "', '" + tbx_action.Text.Trim() + "'" +
                 ")");*/
 
+            addTaskCon.Close();
             //check if user wants to add another task or exit
             DialogResult result = MessageBox.Show("Your task has been registered successfully. Do you want to register another task?", "", MessageBoxButtons.YesNo);
             if(result == DialogResult.Yes) 

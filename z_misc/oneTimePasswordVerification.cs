@@ -27,21 +27,22 @@ namespace OJT_Project.z_misc
 
         private void btn_submit_Click(object sender, EventArgs e)
         {
+            MySqlConnection submitCon = new MySqlConnection(connection.DatabaseConnection);
             //check if OTP is valid
             MySqlCommand validateOTP = new MySqlCommand("SELECT `password` FROM `temp_passwords` WHERE `email` = @email");
             validateOTP.Parameters.AddWithValue("@email", userEmail);
-            if(Convert.ToString(connection.parseDataTableFromDB_secure(validateOTP).Rows[0][0]) == tbx_otp.Text.Trim())
+            if(Convert.ToString(connection.parseDataTableFromDB_secure(validateOTP, submitCon).Rows[0][0]) == tbx_otp.Text.Trim())
             {
                 //remove the OTP from the database
                 MySqlCommand removeOTP = new MySqlCommand("DELETE FROM `temp_passwords` WHERE `email` = @email");
                 removeOTP.Parameters.AddWithValue("@email", userEmail);
-                connection.executeQuery_secure(removeOTP);
+                connection.executeQuery_secure(removeOTP, submitCon);
 
                 //check for user's permission level
                 int permLevel = 0;
                 int id = 0;
-                DataTable userSearch = connection.parseDataTableFromDB("SELECT `id` FROM `users` WHERE `status` = 1 AND `email` = '" + userEmail + "'");
-                DataTable deptHeadSearch = connection.parseDataTableFromDB("SELECT `id` FROM `department_heads` WHERE `status` = 1 AND `email` = '" + userEmail + "'");
+                DataTable userSearch = connection.parseDataTableFromDB("SELECT `id` FROM `users` WHERE `status` = 1 AND `email` = '" + userEmail + "'", submitCon);
+                DataTable deptHeadSearch = connection.parseDataTableFromDB("SELECT `id` FROM `department_heads` WHERE `status` = 1 AND `email` = '" + userEmail + "'", submitCon);
                 if (userSearch.Rows.Count > 0)
                 {
                     id = Convert.ToInt32(userSearch.Rows[0][0]);
@@ -54,13 +55,14 @@ namespace OJT_Project.z_misc
                 }
                 else
                 {
-                    id = Convert.ToInt32(connection.parseDataTableFromDB("SELECT `id` FROM `admins` WHERE `status` = 1 AND `email` = '" + userEmail + "'").Rows[0][0]);
+                    id = Convert.ToInt32(connection.parseDataTableFromDB("SELECT `id` FROM `admins` WHERE `status` = 1 AND `email` = '" + userEmail + "'", submitCon).Rows[0][0]);
                     permLevel = 2;
                 }
                 changePassword passwordUpdate = new changePassword(id, permLevel);
                 passwordUpdate.FormClosed += (s, args) => this.Close();
                 this.Hide();
                 passwordUpdate.Show();
+                submitCon.Close();
             }
             else
             {

@@ -31,8 +31,11 @@ namespace OJT_Project.z_misc
 
         private void btn_submit_Click(object sender, EventArgs e)
         {
+            MySqlConnection submitCon = new MySqlConnection(connection.DatabaseConnection);
+            submitCon.OpenWithWarning();
+
             //check if both password inputs are equal to each other
-            if(tbx_password1.Text.Trim() == tbx_password2.Text.Trim())
+            if (tbx_password1.Text.Trim() == tbx_password2.Text.Trim())
             {
                 MySqlCommand updatePassword = new MySqlCommand();
                 //update the password
@@ -56,15 +59,17 @@ namespace OJT_Project.z_misc
                 updatePassword.Parameters.AddWithValue("@password", hashing.GetHashString(tbx_password1.Text.Trim() + userID));
                 updatePassword.Parameters.AddWithValue("@id", userID);
 
-                connection.executeQuery_secure(updatePassword);
+                connection.executeQuery_secure(updatePassword, submitCon);
 
                 MessageBox.Show("Your password has been updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                submitCon.Close();
                 this.Close();
             }
             else
             {
                 MessageBox.Show("Passwords are not equal.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            submitCon.Close();
         }
 
         private void tbx_password2_TextChanged(object sender, EventArgs e)

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 namespace OJT_Project.Admin_Client
 {
@@ -21,21 +22,27 @@ namespace OJT_Project.Admin_Client
 
         private void userRegistration_Load(object sender, EventArgs e)
         {
+            MySqlConnection load = new MySqlConnection(connection.DatabaseConnection);
+            load.OpenWithWarning();
             //parse all departments from the database and cache the result
-            departments = connection.parseDataTableFromDB_secure(new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `departments` WHERE `status` = 1 ORDER BY `id`"));
+            departments = connection.parseDataTableFromDB_secure(new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `departments` WHERE `status` = 1 ORDER BY `id`"), load);
             globalFunctions.addDbInfoToComboBox(cbx_department, departments, "deptName");
+            load.Close();
         }
 
         private void cbx_department_SelectedIndexChanged(object sender, EventArgs e)
         {
+            MySqlConnection indexChange = new MySqlConnection(connection.DatabaseConnection);
+            indexChange.OpenWithWarning();
             //set selectable roles depending on department
             MySql.Data.MySqlClient.MySqlCommand retrieveRoles = new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `roles` WHERE `department_id` = @deptID ORDER BY `id`");
             retrieveRoles.Parameters.AddWithValue("@deptID" ,departments.Rows[cbx_department.SelectedIndex]["id"]);
 
-            roles = connection.parseDataTableFromDB_secure(retrieveRoles);
+            roles = connection.parseDataTableFromDB_secure(retrieveRoles, indexChange);
             
             //clear role items before adding the ones from the database
             globalFunctions.addDbInfoToComboBox(cbx_role, roles, "role");
+            indexChange.Close();
         }
 
         private void btn_generatePassword_Click(object sender, EventArgs e)
@@ -56,6 +63,8 @@ namespace OJT_Project.Admin_Client
 
         private void cbx_permissions_SelectedIndexChanged(object sender, EventArgs e)
         {
+            MySqlConnection permissionChangeCon = new MySqlConnection(connection.DatabaseConnection);
+            permissionChangeCon.OpenWithWarning();
             //set everything to visible
             lbl_department.Visible = true;
             lbl_role.Visible = true;
@@ -81,14 +90,17 @@ namespace OJT_Project.Admin_Client
                     //if registering a department head, role is hidden
                     lbl_role.Visible = false;
                     cbx_role.Visible = false;
-                    departments = connection.parseDataTableFromDB_secure(new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `departments` WHERE `status` = 1 AND `head_id` = 0 ORDER BY `id`"));
+                    departments = connection.parseDataTableFromDB_secure(new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `departments` WHERE `status` = 1 AND `head_id` = 0 ORDER BY `id`"), permissionChangeCon);
                     globalFunctions.addDbInfoToComboBox(cbx_department, departments, "deptName");
                     break;
             }
+            permissionChangeCon.Close();
         }
 
         private void btn_addUser_Click(object sender, EventArgs e)
         {
+            MySqlConnection addUserCon = new MySqlConnection(connection.DatabaseConnection);
+            addUserCon.OpenWithWarning();
             //lbl_debug.Text = hashing.GetHashString(tbx_password.Text.Trim() + tbx_username.Text.Trim());
             int id;
             
@@ -109,21 +121,21 @@ namespace OJT_Project.Admin_Client
                     insertUser.Parameters.AddWithValue("@deptID", departments.Rows[cbx_department.SelectedIndex]["id"]);
                     insertUser.Parameters.AddWithValue("@roleID", roles.Rows[cbx_role.SelectedIndex]["id"]);
 
-                    connection.executeQuery_secure(insertUser);
+                    connection.executeQuery_secure(insertUser, addUserCon);
 
                     //retrive ID from newly created entry
                     retrieveID = new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `users` WHERE `email` = @email AND `username` = @username AND `password` = ''");
                     retrieveID.Parameters.AddWithValue("@email", tbx_email.Text.Trim());
                     retrieveID.Parameters.AddWithValue("@username", tbx_username.Text.Trim());
 
-                    id = Convert.ToInt32(connection.parseDataTableFromDB_secure(retrieveID).Rows[0]["id"]);
+                    id = Convert.ToInt32(connection.parseDataTableFromDB_secure(retrieveID, addUserCon).Rows[0]["id"]);
 
                     //update the password
                     updatePassword = new MySql.Data.MySqlClient.MySqlCommand("UPDATE `users` SET `password` = @password WHERE `id` = @id");
                     updatePassword.Parameters.AddWithValue("@password", hashing.GetHashString(tbx_password.Text + id));
                     updatePassword.Parameters.AddWithValue("@id", id);
 
-                    connection.executeQuery_secure(updatePassword);
+                    connection.executeQuery_secure(updatePassword, addUserCon);
                     break;
 
                 case 1:
@@ -131,6 +143,7 @@ namespace OJT_Project.Admin_Client
                     if(Convert.ToInt32(departments.Rows[cbx_department.SelectedIndex]["head_id"]) != 0)
                     {
                         MessageBox.Show("There is already a head assigned to this department.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        addUserCon.Close();
                         return;
                     }
 
@@ -140,21 +153,21 @@ namespace OJT_Project.Admin_Client
                     insertUser.Parameters.AddWithValue("@email", tbx_email.Text.Trim());
                     insertUser.Parameters.AddWithValue("@deptID", departments.Rows[cbx_department.SelectedIndex]["id"]);
 
-                    connection.executeQuery_secure(insertUser);
+                    connection.executeQuery_secure(insertUser, addUserCon);
 
                     //retrive ID from newly created entry
                     retrieveID = new MySql.Data.MySqlClient.MySqlCommand("SELECT * FROM `department_heads` WHERE `email` = @email AND `username` = @username AND `password` = ''");
                     retrieveID.Parameters.AddWithValue("@email", tbx_email.Text.Trim());
                     retrieveID.Parameters.AddWithValue("@username", tbx_username.Text.Trim());
 
-                    id = Convert.ToInt32(connection.parseDataTableFromDB_secure(retrieveID).Rows[0]["id"]);
+                    id = Convert.ToInt32(connection.parseDataTableFromDB_secure(retrieveID, addUserCon).Rows[0]["id"]);
 
                     //update password
                     updatePassword = new MySql.Data.MySqlClient.MySqlCommand("UPDATE `department_heads` SET `password` = @password WHERE `id` = @id");
                     updatePassword.Parameters.AddWithValue("@password", hashing.GetHashString(tbx_password.Text + id));
                     updatePassword.Parameters.AddWithValue("@id", id);
 
-                    connection.executeQuery_secure(updatePassword);
+                    connection.executeQuery_secure(updatePassword, addUserCon);
 
                     //update the department to set this new person as the head
                     if (Convert.ToInt32(departments.Rows[cbx_department.SelectedIndex]["id"]) != 0)
@@ -162,7 +175,7 @@ namespace OJT_Project.Admin_Client
                         MySql.Data.MySqlClient.MySqlCommand updateDept = new MySql.Data.MySqlClient.MySqlCommand("UPDATE `departments` SET `head_id` = @id WHERE `id` = @deptID");
                         updateDept.Parameters.AddWithValue("@id", id);
                         updateDept.Parameters.AddWithValue("@deptID", departments.Rows[cbx_department.SelectedIndex]["id"]);
-                        connection.executeQuery_secure(updateDept);
+                        connection.executeQuery_secure(updateDept, addUserCon);
                     }
                     break;
 
@@ -173,7 +186,7 @@ namespace OJT_Project.Admin_Client
                     insertUser.Parameters.AddWithValue("@username", tbx_username.Text.Trim());
                     insertUser.Parameters.AddWithValue("@email", tbx_email.Text.Trim());
 
-                    connection.executeQuery_secure(insertUser);
+                    connection.executeQuery_secure(insertUser, addUserCon);
 
                     //retrieve ID from the newly created entry
                     //id = Convert.ToInt32(connection.parseDataTableFromDB("SELECT * FROM `admins` WHERE `email` = '" + tbx_email.Text.Trim() + "' AND `username` = '" + tbx_username.Text.Trim() + "' AND `password` = ''").Rows[0]["id"]);
@@ -181,20 +194,22 @@ namespace OJT_Project.Admin_Client
                     retrieveID.Parameters.AddWithValue("@email", tbx_email.Text.Trim());
                     retrieveID.Parameters.AddWithValue("@username", tbx_username.Text.Trim());
 
-                    id = Convert.ToInt32(connection.parseDataTableFromDB_secure(retrieveID).Rows[0]["id"]);
+                    id = Convert.ToInt32(connection.parseDataTableFromDB_secure(retrieveID, addUserCon).Rows[0]["id"]);
 
                     //set password to equal to the hash of the inputted password with the id appeneded to the end
                     updatePassword = new MySql.Data.MySqlClient.MySqlCommand("UPDATE `admins` SET `password` = @password WHERE `id` = @id");
                     updatePassword.Parameters.AddWithValue("@password", hashing.GetHashString(tbx_password.Text + id));
                     updatePassword.Parameters.AddWithValue("@id", id);
 
-                    connection.executeQuery_secure(updatePassword);
+                    connection.executeQuery_secure(updatePassword, addUserCon);
                     break;
 
                 default:
                     MessageBox.Show("You shouldn't be seeing this. If you do see this, then I definitely fucked up somewhere");
                     break;
             }
+
+            addUserCon.Close();
 
             DialogResult result = MessageBox.Show("User " + tbx_username.Text.Trim() + " has been successfully registered into the database. Would you like to add another user?", "Success", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes) 

@@ -42,6 +42,9 @@ namespace OJT_Project.Admin_Client
 
         private void updateDropdowns()
         {
+            MySqlConnection dropdownUpdateCon = new MySqlConnection(connection.DatabaseConnection);
+            dropdownUpdateCon.OpenWithWarning();
+
             cbx_role.Items.Clear();
             //if roles are also visible
             if (cbx_role.Visible)
@@ -49,7 +52,7 @@ namespace OJT_Project.Admin_Client
                 //get roles under the current database
                 try
                 {
-                    roles = connection.parseDataTableFromDB("SELECT * FROM `roles` WHERE `status` = 1 AND `department_id` = " + departments.Rows[cbx_department.SelectedIndex]["id"]);
+                    roles = connection.parseDataTableFromDB("SELECT * FROM `roles` WHERE `status` = 1 AND `department_id` = " + departments.Rows[cbx_department.SelectedIndex]["id"], dropdownUpdateCon);
                 }
                 catch
                 {
@@ -66,10 +69,13 @@ namespace OJT_Project.Admin_Client
                     }
                 }
             }
+            dropdownUpdateCon.Close();
         }
 
         private void updateUser_Load(object sender, EventArgs e)
         {
+            MySqlConnection updateUserCon = new MySqlConnection(connection.DatabaseConnection);
+            updateUserCon.OpenWithWarning();
             //parse database for this user info
             MySql.Data.MySqlClient.MySqlCommand selectActiveUser = new MySql.Data.MySqlClient.MySqlCommand();
             switch (userPermLevel)
@@ -99,7 +105,7 @@ namespace OJT_Project.Admin_Client
                     break;
             }
             selectActiveUser.Parameters.AddWithValue("@id", userID);
-            userInfo = connection.parseDataTableFromDB_secure(selectActiveUser);
+            userInfo = connection.parseDataTableFromDB_secure(selectActiveUser, updateUserCon);
 
             //set current controls to the info of the current user
             tbx_username.Text = "" + userInfo.Rows[0]["username"];
@@ -109,7 +115,7 @@ namespace OJT_Project.Admin_Client
             if (cbx_department.Visible)
             {
                 //get all departments from the DB
-                departments = connection.parseDataTableFromDB("SELECT * FROM `departments` WHERE `status` = 1 AND `id` != 0");
+                departments = connection.parseDataTableFromDB("SELECT * FROM `departments` WHERE `status` = 1 AND `id` != 0", updateUserCon);
                 //add the options to the dropdown
                 for (int i = 0; i < departments.Rows.Count; i++)
                 {
@@ -129,6 +135,7 @@ namespace OJT_Project.Admin_Client
                 }
                 updateDropdowns();
             }
+            updateUserCon.Close();
         }
 
         private void cbx_department_SelectedIndexChanged(object sender, EventArgs e)
@@ -166,8 +173,10 @@ namespace OJT_Project.Admin_Client
                     break;
             }
             query += " SET `username` = '" + tbx_username.Text.Trim() + "', `email` = '" + tbx_email.Text.Trim() + "'";
-            try 
-            { 
+            MySqlConnection updateUserCon = new MySqlConnection(connection.DatabaseConnection);
+            updateUserCon.OpenWithWarning();
+            try
+            {
                 if (cbx_department.Visible)
                 {
                     query += ", `department_id` = " + departments.Rows[cbx_department.SelectedIndex]["id"];
@@ -192,7 +201,7 @@ namespace OJT_Project.Admin_Client
                         checkIfDeptIsTaken.Parameters.AddWithValue("@deptID", departments.Rows[cbx_department.SelectedIndex]["id"]);
                         checkIfDeptIsTaken.Parameters.AddWithValue("@userID", userID);
 
-                        if(connection.parseDataTableFromDB_secure(checkIfDeptIsTaken).Rows.Count > 0)
+                        if(connection.parseDataTableFromDB_secure(checkIfDeptIsTaken, updateUserCon).Rows.Count > 0)
                         {
                             DialogResult result = MessageBox.Show("There is already a head assigned to this department. Would you still like to reassign this user as department head?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                             if(result == DialogResult.Yes)
@@ -200,7 +209,7 @@ namespace OJT_Project.Admin_Client
                                 //set previous department head to be departmentless
                                 MySqlCommand destroyPreviousHead = new MySqlCommand("UPDATE `department_heads` SET `department_id` = 0 WHERE `department_id` = @deptID");
                                 destroyPreviousHead.Parameters.AddWithValue("@deptID", departments.Rows[cbx_department.SelectedIndex]["id"]);
-                                connection.executeQuery_secure(destroyPreviousHead);
+                                connection.executeQuery_secure(destroyPreviousHead, updateUserCon);
                             }
                             else
                             {
@@ -212,7 +221,7 @@ namespace OJT_Project.Admin_Client
                         updateDepartment.Parameters.AddWithValue("@userID", userID);
                         updateDepartment.Parameters.AddWithValue("@deptID", departments.Rows[cbx_department.SelectedIndex]["id"]);
 
-                        connection.executeQuery_secure(updateDepartment);
+                        connection.executeQuery_secure(updateDepartment, updateUserCon);
 
                         //also set the dept head's former department to be vacant if they changed department
                         if (Convert.ToInt32(departments.Rows[cbx_department.SelectedIndex]["id"]) != Convert.ToInt32(userInfo.Rows[0]["department_id"]))
@@ -220,7 +229,7 @@ namespace OJT_Project.Admin_Client
                             //connection.executeQuery("UPDATE `departments` SET `head_id` = 0 WHERE `id` = " + userInfo.Rows[0]["department_id"]);
                             MySqlCommand updateDepartmentToVacant = new MySqlCommand("UPDATE `departments` SET `head_id` = 0 WHERE `id` = @deptID");
                             updateDepartmentToVacant.Parameters.AddWithValue("@deptID", userInfo.Rows[0]["department_id"]);
-                            connection.executeQuery_secure(updateDepartmentToVacant);
+                            connection.executeQuery_secure(updateDepartmentToVacant, updateUserCon);
                         }
                         //set any inactive department heads assigned to this department to be vacant
                         ///connection.executeQuery("UPDATE `department_heads` SET `department_id` = 0 WHERE `status` = 0 AND `department_id` = " + departments.Rows[cbx_department.SelectedIndex]["id"]);
@@ -228,7 +237,8 @@ namespace OJT_Project.Admin_Client
                 }
 
                 query += " WHERE `id` = " + userID;
-                connection.executeQuery(query);
+                connection.executeQuery(query, updateUserCon);
+                updateUserCon.Close();
             }
             catch
             {
