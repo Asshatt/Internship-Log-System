@@ -100,7 +100,6 @@ namespace OJT_Project.Admin_Client
         private void btn_addUser_Click(object sender, EventArgs e)
         {
             MySqlConnection addUserCon = new MySqlConnection(connection.DatabaseConnection);
-            addUserCon.OpenWithWarning();
             //lbl_debug.Text = hashing.GetHashString(tbx_password.Text.Trim() + tbx_username.Text.Trim());
             int id;
             
@@ -109,12 +108,84 @@ namespace OJT_Project.Admin_Client
             MySql.Data.MySqlClient.MySqlCommand retrieveID;
             MySql.Data.MySqlClient.MySqlCommand updatePassword;
 
+            if(tbx_username.Text.Trim() == "")
+            {
+                MessageBox.Show("Please define a username for this user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (tbx_password.Text.Trim() == "")
+            {
+                MessageBox.Show("Please define a password for this user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (tbx_email.Text.Trim() == "")
+            {
+                MessageBox.Show("Please define an email for this user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (cbx_department.SelectedIndex == -1 && cbx_permissions.SelectedIndex != 2)
+            {
+                MessageBox.Show("Please define a department for this user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if(cbx_permissions.SelectedIndex == -1)
+            {
+                MessageBox.Show("Please define the permissions level for this user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            addUserCon.OpenWithWarning();
+
+            MySqlCommand checkEmail = new MySqlCommand("SELECT `id` FROM `users` WHERE `email` = @email AND `status` = 1" +
+                " UNION " +
+                "SELECT `id` FROM `department_heads` WHERE `email` = @email AND `status` = 1" +
+                " UNION " +
+                "SELECT `id` FROM `admins` WHERE `email` = @email AND `status` = 1");
+            checkEmail.Parameters.AddWithValue("@email", tbx_email.Text.Trim());
+
+            DataTable sameEmail = connection.parseDataTableFromDB_secure(checkEmail, addUserCon);
+
+
+            MySqlCommand checkUsername = new MySqlCommand("SELECT `id` FROM `users` WHERE `username` = @name AND `status` = 1" +
+                " UNION " +
+                "SELECT `id` FROM `department_heads` WHERE `username` = @name AND `status` = 1" +
+                " UNION " +
+                "SELECT `id` FROM `admins` WHERE `username` = @name AND `status` = 1");
+            checkUsername.Parameters.AddWithValue("@name", tbx_username.Text);
+
+            DataTable sameUsername = connection.parseDataTableFromDB_secure(checkUsername, addUserCon);
+
+            if (sameEmail.Rows.Count > 0)
+            {
+                MessageBox.Show("That email is already registered as a user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                addUserCon.Close();
+                return;
+            }
+
+            if(sameUsername.Rows.Count > 0)
+            {
+                MessageBox.Show("That username is already taken.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                addUserCon.Close();
+                return;
+            }
 
             switch (cbx_permissions.SelectedIndex)
             {
                 case 0:
                     //insert info into user without password                    
                     //use SQL Parameters for security reasons
+
+                    if(cbx_role.SelectedIndex == -1)
+                    {
+                        MessageBox.Show("Please define a role for this user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        addUserCon.Close();
+                        return;
+                    }
+
                     insertUser = new MySql.Data.MySqlClient.MySqlCommand("INSERT INTO `users` (`username`, `email`, `department_id`, `role_id`) VALUES (@username, @email, @deptID, @roleID)");
                     insertUser.Parameters.AddWithValue("@username", tbx_username.Text.Trim());
                     insertUser.Parameters.AddWithValue("@email", tbx_email.Text.Trim());

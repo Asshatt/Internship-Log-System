@@ -71,6 +71,12 @@ namespace OJT_Project.z_misc
                     connection.executeQuery_secure(addOTP, confirmCon);
                 }
             }
+            else
+            {
+                MessageBox.Show("This email is not registered in the database.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                confirmCon.Close();
+                return;
+            }
             MessageBox.Show("A message has been sent to your email containing your one time password");
             //open the OTP confirmation form
             oneTimePasswordVerification OTP = new oneTimePasswordVerification(tbx_email.Text.Trim());

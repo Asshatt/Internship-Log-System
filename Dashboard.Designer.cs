@@ -28,10 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title3 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.lbl_userInfo = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -47,6 +46,7 @@
             this.tbl_adminControls = new System.Windows.Forms.TableLayoutPanel();
             this.btn_editDepartments = new System.Windows.Forms.Button();
             this.btn_editUser = new System.Windows.Forms.Button();
+            this.btn_clearDatabase = new System.Windows.Forms.Button();
             this.tcl_previewControls = new System.Windows.Forms.TabControl();
             this.tbp_taskPreview = new System.Windows.Forms.TabPage();
             this.dgv_taskPreview = new System.Windows.Forms.DataGridView();
@@ -102,7 +102,6 @@
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
             this.btn_exportToCSV = new System.Windows.Forms.Button();
             this.btn_updateMyAccount = new System.Windows.Forms.Button();
-            this.btn_clearDatabase = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tcl_controls.SuspendLayout();
@@ -377,6 +376,20 @@
             this.btn_editUser.UseVisualStyleBackColor = true;
             this.btn_editUser.Click += new System.EventHandler(this.btn_editUser_Click);
             // 
+            // btn_clearDatabase
+            // 
+            this.btn_clearDatabase.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_clearDatabase.BackColor = System.Drawing.SystemColors.Control;
+            this.btn_clearDatabase.Location = new System.Drawing.Point(567, 3);
+            this.btn_clearDatabase.Name = "btn_clearDatabase";
+            this.btn_clearDatabase.Size = new System.Drawing.Size(135, 59);
+            this.btn_clearDatabase.TabIndex = 3;
+            this.btn_clearDatabase.Text = "Clear Database";
+            this.btn_clearDatabase.UseVisualStyleBackColor = false;
+            this.btn_clearDatabase.Click += new System.EventHandler(this.btn_clearDatabase_Click);
+            // 
             // tcl_previewControls
             // 
             this.tcl_previewControls.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -461,7 +474,7 @@
             this.dgv_users.Margin = new System.Windows.Forms.Padding(0);
             this.dgv_users.Name = "dgv_users";
             this.dgv_users.ReadOnly = true;
-            this.dgv_users.Size = new System.Drawing.Size(694, 458);
+            this.dgv_users.Size = new System.Drawing.Size(694, 466);
             this.dgv_users.StandardTab = true;
             this.dgv_users.TabIndex = 7;
             this.dgv_users.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.SetSelectedDGV);
@@ -485,7 +498,7 @@
             this.dgv_deptHeads.Location = new System.Drawing.Point(0, 0);
             this.dgv_deptHeads.Margin = new System.Windows.Forms.Padding(0);
             this.dgv_deptHeads.Name = "dgv_deptHeads";
-            this.dgv_deptHeads.Size = new System.Drawing.Size(694, 458);
+            this.dgv_deptHeads.Size = new System.Drawing.Size(694, 466);
             this.dgv_deptHeads.TabIndex = 8;
             this.dgv_deptHeads.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.SetSelectedDGV);
             // 
@@ -508,7 +521,7 @@
             this.dgv_admins.Location = new System.Drawing.Point(0, 0);
             this.dgv_admins.Margin = new System.Windows.Forms.Padding(0);
             this.dgv_admins.Name = "dgv_admins";
-            this.dgv_admins.Size = new System.Drawing.Size(694, 458);
+            this.dgv_admins.Size = new System.Drawing.Size(694, 466);
             this.dgv_admins.TabIndex = 9;
             this.dgv_admins.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.SetSelectedDGV);
             // 
@@ -578,7 +591,7 @@
             this.tcl_activityTabs.Location = new System.Drawing.Point(6, 6);
             this.tcl_activityTabs.Name = "tcl_activityTabs";
             this.tcl_activityTabs.SelectedIndex = 0;
-            this.tcl_activityTabs.Size = new System.Drawing.Size(687, 438);
+            this.tcl_activityTabs.Size = new System.Drawing.Size(687, 446);
             this.tcl_activityTabs.TabIndex = 0;
             // 
             // tabPage1
@@ -586,7 +599,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 30);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(679, 404);
+            this.tabPage1.Size = new System.Drawing.Size(679, 412);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -596,7 +609,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 30);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(679, 404);
+            this.tabPage2.Size = new System.Drawing.Size(679, 412);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1021,33 +1034,34 @@
             this.pie_roleSummary.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            chartArea3.Name = "ChartArea1";
-            this.pie_roleSummary.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.pie_roleSummary.Legends.Add(legend3);
+            chartArea1.Name = "ChartArea1";
+            this.pie_roleSummary.ChartAreas.Add(chartArea1);
             this.pie_roleSummary.Location = new System.Drawing.Point(3, 245);
             this.pie_roleSummary.Name = "pie_roleSummary";
-            this.pie_roleSummary.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Chocolate;
-            series3.BackImageTransparentColor = System.Drawing.Color.Transparent;
-            series3.BorderColor = System.Drawing.Color.White;
-            series3.BorderWidth = 5;
-            series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series3.Font = new System.Drawing.Font("Segoe UI", 8.75F);
-            series3.Label = "#VALX \\n#VAL{N2} Hrs.";
-            series3.LabelToolTip = "#VAL Hours";
-            series3.Legend = "Legend1";
-            series3.LegendText = "#VALX";
-            series3.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Cross;
-            series3.Name = "s1";
-            this.pie_roleSummary.Series.Add(series3);
+            this.pie_roleSummary.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SeaGreen;
+            series1.BackImageTransparentColor = System.Drawing.Color.Transparent;
+            series1.BorderColor = System.Drawing.Color.White;
+            series1.BorderWidth = 0;
+            series1.ChartArea = "ChartArea1";
+            series1.Font = new System.Drawing.Font("Segoe UI", 8.75F);
+            series1.IsXValueIndexed = true;
+            series1.Label = "#VAL{N2} Hrs.";
+            series1.LabelBackColor = System.Drawing.Color.White;
+            series1.LabelToolTip = "#VAL Hours";
+            series1.LegendText = "#VALX";
+            series1.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Cross;
+            series1.Name = "s1";
+            series1.YValuesPerPoint = 4;
+            this.pie_roleSummary.Series.Add(series1);
             this.pie_roleSummary.Size = new System.Drawing.Size(361, 237);
             this.pie_roleSummary.TabIndex = 0;
             this.pie_roleSummary.Text = "Summary of Roles";
-            title3.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            title3.Name = "Summary of Department Roles";
-            title3.Text = "Summary of Department Roles";
-            this.pie_roleSummary.Titles.Add(title3);
+            title1.DockedToChartArea = "ChartArea1";
+            title1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            title1.IsDockedInsideChartArea = false;
+            title1.Name = "Summary of Department Roles";
+            title1.Text = "Summary of Department Roles";
+            this.pie_roleSummary.Titles.Add(title1);
             // 
             // tbp_admin
             // 
@@ -1144,20 +1158,6 @@
             this.btn_updateMyAccount.Text = "Update Acc.";
             this.btn_updateMyAccount.UseVisualStyleBackColor = true;
             this.btn_updateMyAccount.Click += new System.EventHandler(this.btn_updateMyAccount_Click);
-            // 
-            // btn_clearDatabase
-            // 
-            this.btn_clearDatabase.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_clearDatabase.BackColor = System.Drawing.SystemColors.Control;
-            this.btn_clearDatabase.Location = new System.Drawing.Point(567, 3);
-            this.btn_clearDatabase.Name = "btn_clearDatabase";
-            this.btn_clearDatabase.Size = new System.Drawing.Size(135, 59);
-            this.btn_clearDatabase.TabIndex = 3;
-            this.btn_clearDatabase.Text = "Clear Database";
-            this.btn_clearDatabase.UseVisualStyleBackColor = false;
-            this.btn_clearDatabase.Click += new System.EventHandler(this.btn_clearDatabase_Click);
             // 
             // dashboard
             // 

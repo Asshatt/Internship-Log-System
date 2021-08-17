@@ -29,6 +29,32 @@ namespace OJT_Project
             login(tbx_username.Text.Trim(), tbx_password.Text.Trim());
         }
 
+        //check if the user exists in another permission level
+        private bool checkUsers(string username)
+        {
+            MySqlCommand checkUsers = new MySqlCommand("SELECT * FROM `users` WHERE `users`.`username` = @username;");
+            checkUsers.Parameters.AddWithValue("@username", username);
+            MySqlCommand checkAdmins = new MySqlCommand("SELECT * FROM `admins` WHERE `admins`.`username` = @username;");
+            checkAdmins.Parameters.AddWithValue("@username", username);
+            MySqlCommand checkHead = new MySqlCommand("SELECT * FROM `department_heads` WHERE `department_heads`.`username` = @username;");
+            checkHead.Parameters.AddWithValue("@username", username);
+
+            MySqlConnection userCheckCon = new MySqlConnection(connection.DatabaseConnection);
+
+            if(connection.parseDataTableFromDB_secure(checkUsers, userCheckCon).Rows.Count > 0|| 
+                connection.parseDataTableFromDB_secure(checkHead, userCheckCon).Rows.Count > 0||
+                connection.parseDataTableFromDB_secure(checkAdmins, userCheckCon).Rows.Count > 0)
+            {
+                userCheckCon.Close();
+                return true;
+            }
+            else
+            {
+                userCheckCon.Close();
+                return false;
+            }
+        }
+
         //function for logging in
         private void login(string username, string password) 
         {
@@ -67,6 +93,12 @@ namespace OJT_Project
             {
                 output = Convert.ToString(userInfo.Rows[0]["password"]);
             }
+            else if(checkUsers(username))
+            {
+                lbl_validationCheck.Text = "This user has a different permission level.";
+                return;
+            }
+
             try
             {
                 if (hashing.GetHashString(password + userInfo.Rows[0]["id"]) == output && password != "" && Convert.ToInt32(userInfo.Rows[0]["status"]) == 1)

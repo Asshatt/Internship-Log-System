@@ -1,0 +1,51 @@
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\Log System.exe.config
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\Log System.exe.manifest
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\Log System.application
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\Log System.exe
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\Log System.pdb
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\MetroFramework.Design.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\MetroFramework.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\MetroFramework.Fonts.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\MySql.Data.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\System.Buffers.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\System.Memory.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\System.Runtime.CompilerServices.Unsafe.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\System.ValueTuple.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\Google.Protobuf.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\Zstandard.Net.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\K4os.Compression.LZ4.Streams.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\BouncyCastle.Crypto.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\Ubiety.Dns.Core.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\K4os.Compression.LZ4.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\K4os.Hash.xxHash.dll
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\MySql.Data.xml
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\System.Buffers.xml
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\System.Memory.xml
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\System.Runtime.CompilerServices.Unsafe.xml
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\bin\Release\System.ValueTuple.xml
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.Admin_Client.addDepartments.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.Admin_Client.userRegistration.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.Admin_Client.clearDatabase.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.Admin_Client.editDepartments.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.Admin_Client.editUser.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.Admin_Client.updateDepartments.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.Admin_Client.updateUser.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.dashboard.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.Dept._Head_Client.activityEditor.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.Dept._Head_Client.roleEditor.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.Dept._Head_Client.subActivityEditor.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.loginForm.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.Properties.Resources.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.User_Client.addTask.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.User_Client.editTask.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.z_misc.changePassword.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.z_misc.enterPassword.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.z_misc.forgotPassword.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT_Project.z_misc.oneTimePasswordVerification.resources
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT-Project.csproj.GenerateResource.cache
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT-Project.csproj.CoreCompileInputs.cache
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\Log System.exe.manifest
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\Log System.application
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\OJT-Project.csproj.CopyComplete
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\Log System.exe
+D:\Windows Form Projects\OJT-Project Files\OJT-Project Common Functions\obj\Release\Log System.pdb

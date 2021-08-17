@@ -57,6 +57,12 @@ namespace OJT_Project.Admin_Client
 
         private void btn_removeDepartment_Click(object sender, EventArgs e)
         {
+            DialogResult result = MessageBox.Show("Are you sure you want to delete this department and all the data linked to it?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if(result == DialogResult.No)
+            {
+                return;
+            }
+
             MySqlConnection removeDeptCon = new MySqlConnection(connection.DatabaseConnection);
             indexedRadioButton selectedButton = globalFunctions.getCheckedRadio(flp_departments);
             if (selectedButton == null)

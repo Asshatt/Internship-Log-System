@@ -33,6 +33,8 @@ namespace OJT_Project.Admin_Client
                 lbl_role.Visible = false;
                 cbx_department.Visible = false;
                 cbx_role.Visible = false;
+                tbx_email.Visible = false;
+                lbl_email.Visible = false;
             }
             else
             {
@@ -154,6 +156,18 @@ namespace OJT_Project.Admin_Client
 
         private void btn_updateUser_Click(object sender, EventArgs e)
         {
+            if (tbx_username.Text.Trim() == "")
+            {
+                MessageBox.Show("Please define a username for this user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (tbx_email.Text.Trim() == "")
+            {
+                MessageBox.Show("Please define an email for this user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             //create the query string
             string query = "UPDATE";
 
@@ -213,6 +227,7 @@ namespace OJT_Project.Admin_Client
                             }
                             else
                             {
+                                updateUserCon.Close();
                                 return;
                             }
                         }
@@ -237,14 +252,52 @@ namespace OJT_Project.Admin_Client
                 }
 
                 query += " WHERE `id` = " + userID;
+
+                MySqlCommand checkEmail = new MySqlCommand("SELECT `id` FROM `users` WHERE `email` = @email AND `id` != @id AND `status` = 1" +
+                " UNION " +
+                "SELECT `id` FROM `department_heads` WHERE `email` = @email AND `id` != @id AND `status` = 1" +
+                " UNION " +
+                "SELECT `id` FROM `admins` WHERE `email` = @email AND `id` != @id AND `status` = 1");
+                checkEmail.Parameters.AddWithValue("@email", tbx_email.Text.Trim());
+                checkEmail.Parameters.AddWithValue("@id", userID);
+
+                DataTable sameEmail = connection.parseDataTableFromDB_secure(checkEmail, updateUserCon);
+
+
+                MySqlCommand checkUsername = new MySqlCommand("SELECT `id` FROM `users` WHERE `username` = @name AND `id` != @id AND `status` = 1" +
+                " UNION " +
+                "SELECT `id` FROM `department_heads` WHERE `username` = @name AND `id` != @id AND `status` = 1" +
+                " UNION " +
+                "SELECT `id` FROM `admins` WHERE `username` = @name AND `id` != @id AND `status` = 1");
+                checkUsername.Parameters.AddWithValue("@name", tbx_username.Text);
+                checkUsername.Parameters.AddWithValue("@id", userID);
+
+                DataTable sameUsername = connection.parseDataTableFromDB_secure(checkUsername, updateUserCon);
+
+                if (sameEmail.Rows.Count > 0)
+                {
+                    MessageBox.Show("That email is already registered as a user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    updateUserCon.Close();
+                    return;
+                }
+
+                if (sameUsername.Rows.Count > 0)
+                {
+                    MessageBox.Show("That username is already taken.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    updateUserCon.Close();
+                    return;
+                }
+
                 connection.executeQuery(query, updateUserCon);
                 updateUserCon.Close();
             }
             catch
             {
-                MessageBox.Show("Something went wrong. Check if you inputted everything correctly.","Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Something went wrong. Check if you input everything correctly.","Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
+            MessageBox.Show("Changes have been saved successfully.", "Success!", MessageBoxButtons.OK);
             this.Close();
         }
 

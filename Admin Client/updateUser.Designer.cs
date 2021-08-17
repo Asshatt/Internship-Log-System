@@ -34,7 +34,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.cbx_role = new System.Windows.Forms.ComboBox();
             this.tbx_username = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lbl_email = new System.Windows.Forms.Label();
             this.cbx_department = new System.Windows.Forms.ComboBox();
             this.btn_cancel = new System.Windows.Forms.Button();
             this.btn_updateUser = new System.Windows.Forms.Button();
@@ -104,15 +104,15 @@
             this.tbx_username.Size = new System.Drawing.Size(170, 29);
             this.tbx_username.TabIndex = 1;
             // 
-            // label2
+            // lbl_email
             // 
-            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(93, 48);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(111, 21);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Email Address:";
+            this.lbl_email.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lbl_email.AutoSize = true;
+            this.lbl_email.Location = new System.Drawing.Point(93, 48);
+            this.lbl_email.Name = "lbl_email";
+            this.lbl_email.Size = new System.Drawing.Size(111, 21);
+            this.lbl_email.TabIndex = 2;
+            this.lbl_email.Text = "Email Address:";
             // 
             // cbx_department
             // 
@@ -173,7 +173,7 @@
             this.tableLayoutPanel4.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel4.Controls.Add(this.tbx_username, 1, 0);
             this.tableLayoutPanel4.Controls.Add(this.tbx_email, 1, 1);
-            this.tableLayoutPanel4.Controls.Add(this.label2, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.lbl_email, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.cbx_department, 1, 2);
             this.tableLayoutPanel4.Controls.Add(this.lbl_department, 0, 2);
             this.tableLayoutPanel4.Controls.Add(this.lbl_role, 0, 3);
@@ -247,7 +247,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbx_role;
         private System.Windows.Forms.TextBox tbx_username;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lbl_email;
         private System.Windows.Forms.ComboBox cbx_department;
         private System.Windows.Forms.Button btn_cancel;
         private System.Windows.Forms.Button btn_updateUser;

@@ -77,13 +77,12 @@ namespace OJT_Project
             SmtpClient client;
             MailMessage msg;
 
-            //TODO: make this not my porn alt
-            login = new NetworkCredential("samplejames69@gmail.com", "tinola123");
+            login = new NetworkCredential("recovery177013@gmail.com", "password177013");
             client = new SmtpClient("smtp.gmail.com");
             client.Port = 587;
             client.EnableSsl = true;
             client.Credentials = login;
-            msg = new MailMessage { From = new MailAddress("samplejames69@gmail.com", "Password Reset Manager", Encoding.UTF8) };
+            msg = new MailMessage { From = new MailAddress("recovery177013@gmail.com", "Password Reset Manager", Encoding.UTF8) };
             msg.To.Add(new MailAddress(to));
             msg.Subject = subject;
             msg.Body = body;

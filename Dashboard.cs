@@ -17,8 +17,8 @@ namespace OJT_Project
         DataTable allDepartments;
         DataGridView selectedDGV = null;
 
-        public string userDashboardQuery = "SELECT `startTime`, `duration`, `activity`, `subActivity`, `action` FROM `tasks` WHERE `user_id` = " + user.id + " ORDER BY `startTime`";
-        public string deptHeadDashboardQuery = "SELECT `user_id`, `startTime`, `duration`, `activity`, `subActivity`, `action` FROM `tasks` WHERE `department_id` = " + user.deptID + " ORDER BY `startTime`";
+        public string userDashboardQuery = "SELECT `startTime`, `endTime`, `duration`, `activity`, `subActivity`, `action` FROM `tasks` WHERE `user_id` = " + user.id + " ORDER BY `startTime`";
+        public string deptHeadDashboardQuery = "SELECT `user_id`, `startTime`, `endTime`, `duration`, `activity`, `subActivity`, `action` FROM `tasks` WHERE `department_id` = " + user.deptID + " ORDER BY `startTime`";
         public dashboard()
         {
             InitializeComponent();
@@ -91,14 +91,21 @@ namespace OJT_Project
             //set userinfo label
             lbl_userInfo.Text = "Current User: " + user.username + ", " + user.email;
 
+            if(user.permissionLevel == 0)
+            {
+                lbl_userInfo.Text += ", " + Convert.ToString(connection.parseDataTableFromDB("SELECT * FROM `roles` WHERE `id` = " + user.roleID, drawTaskPreview).Rows[0]["role"]);
+            }
+
             DataTable drawnTasks = data;
             //create a collection of all the columns in the 
             DataColumnCollection columns = drawnTasks.Columns;
             
             DataColumn username = drawnTasks.Columns.Add("username", System.Type.GetType("System.String"));
             DataColumn department = drawnTasks.Columns.Add("department", System.Type.GetType("System.String"));
+            DataColumn durationColumn = drawnTasks.Columns.Add("task duration", System.Type.GetType("System.String"));
             username.SetOrdinal(0);
             department.SetOrdinal(1);
+            durationColumn.SetOrdinal(5);
 
             for(int i = 0; i < drawnTasks.Rows.Count; i++)
             {
@@ -134,9 +141,15 @@ namespace OJT_Project
 
                     }
                 }
+
+                float duration = float.Parse(Convert.ToString(drawnTasks.Rows[i]["duration"]));
+                duration = duration.roundToTwoDecimalPlaces();
+
+                drawnTasks.Rows[i]["task duration"] = duration;
             }
             if (columns.Contains("user_id")) { drawnTasks.Columns.Remove("user_id"); }
             if (columns.Contains("department_id")) { drawnTasks.Columns.Remove("department_id"); }
+            drawnTasks.Columns.Remove("duration");
 
             dgv_taskPreview.DataSource = drawnTasks;
             drawTaskPreview.Close();
@@ -254,7 +267,6 @@ namespace OJT_Project
 
                     for(int i = 0; i < weekLabels.Length; i++)
                     {
-                        //Console.WriteLine("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + user.id + " AND (`startTime` BETWEEN '" + DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays(i).ToString(globalFunctions.sqlDateFormat) + "' AND '" + DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays(i).AddHours(23.9999f).ToString(globalFunctions.sqlDateFormat) + "')");
                         DataTable taskForTheWeek = connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + user.id + " AND (`startTime` BETWEEN '" + DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays(i).ToString(globalFunctions.sqlDateFormat) +"' AND '" + DateTime.Today.StartOfWeek(DayOfWeek.Monday).AddDays(i).AddHours(23.9999f).ToString(globalFunctions.sqlDateFormat) + "')", updateCon);
                         float duration = 0;
                         try
@@ -320,7 +332,14 @@ namespace OJT_Project
                             //DataTable currentUserTasks = connection.parseDataTableFromDB("SELECT `duration` FROM `tasks` WHERE `user_id` = " + users.Rows[j]["id"]);
 
                             //add the duration of all the tasks 
-                            duration = float.Parse(Convert.ToString(connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + users.Rows[j]["id"], updateCon).Rows[0][0]));
+                            try
+                            {
+                                duration = float.Parse(Convert.ToString(connection.parseDataTableFromDB("SELECT SUM(`duration`) FROM `tasks` WHERE `user_id` = " + users.Rows[j]["id"], updateCon).Rows[0][0]));
+                            }
+                            catch
+                            {
+                                duration = 0;
+                            }
                         }
                         //after all that shit, add the points to the pie chart
                         if (duration > 0)
@@ -405,7 +424,15 @@ namespace OJT_Project
                         DataTable durationSum = connection.parseDataTableFromDB_secure(selectSumOfAllUserTasks, updateCon);
 
                         //get duration into a float
-                        float duration = float.Parse(Convert.ToString(durationSum.Rows[0][0]));
+                        float duration;
+                        try
+                        {
+                            duration = float.Parse(Convert.ToString(durationSum.Rows[0][0]));
+                        }
+                        catch
+                        {
+                            duration = 0;
+                        }
                         duration = duration.roundToTwoDecimalPlaces();
                         
                         //add the row
@@ -488,6 +515,12 @@ namespace OJT_Project
         {
             //dumb fuckery to get data table from source of dgv_taskPreview
             DataTable table = new DataTable();
+
+            if(selectedDGV == null)
+            {
+                selectedDGV = dgv_taskPreview;
+            }
+
             var source = selectedDGV.DataSource;
             while (source is BindingSource)
             {
@@ -587,7 +620,6 @@ namespace OJT_Project
         private void SetSelectedDGV(object sender, DataGridViewCellEventArgs e)
         {
             selectedDGV = (DataGridView)sender;
-            //Console.WriteLine(obj.Name);
         }
 
         private void btn_clearDatabase_Click(object sender, EventArgs e)

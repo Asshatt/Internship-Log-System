@@ -52,6 +52,12 @@ namespace OJT_Project.Admin_Client
                 MessageBox.Show("Please select a department head.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            if(tbx_deptName.Text.Trim() == "")
+            {
+                MessageBox.Show("Please set a name for this department.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             //open the connection
             MySqlConnection addDeptCon = new MySqlConnection(connection.DatabaseConnection);
             addDeptCon.OpenWithWarning();

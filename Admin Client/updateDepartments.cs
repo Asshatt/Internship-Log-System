@@ -60,6 +60,13 @@ namespace OJT_Project.Admin_Client
 
         private void btn_addDepartment_Click(object sender, EventArgs e)
         {
+
+            if (tbx_deptName.Text.Trim() == "")
+            {
+                MessageBox.Show("Please set a name for this department.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             MySqlConnection addDeptCon = new MySqlConnection(connection.DatabaseConnection);
             addDeptCon.OpenWithWarning();
             //if department head changed

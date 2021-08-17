@@ -143,7 +143,8 @@ namespace OJT_Project.Dept._Head_Client
             MySqlCommand selectExistingRoles = new MySqlCommand("SELECT * FROM `roles` WHERE `status` = 1 AND `role` = @roleName");
             selectExistingRoles.Parameters.AddWithValue("@roleName", tbx_roleName.Text.Trim());
 
-            MySqlCommand selectExistingRoles_inactive = new MySqlCommand("SELECT * FROM `roles` WHERE `status` = 0 AND `role` = @roleName");
+            MySqlCommand selectExistingRoles_inactive = new MySqlCommand("SELECT * FROM `roles` WHERE `status` = 0 AND `role` = @roleName AND `department_id` = @deptID");
+            selectExistingRoles_inactive.Parameters.AddWithValue("@deptID", user.deptID);
             selectExistingRoles_inactive.Parameters.AddWithValue("@roleName", tbx_roleName.Text.Trim());
 
             //if there is no inputted name, return

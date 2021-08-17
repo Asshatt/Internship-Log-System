@@ -30,6 +30,11 @@ namespace OJT_Project
         ///OLD SQL FUNCTIONS, VERY NOT SECURE
         public static DataTable parseDataTableFromDB(string query, MySqlConnection con)
         {
+            if (con.State == ConnectionState.Closed)
+            {
+                con.Open();
+            }
+
             //establish connection
             DataTable table = new DataTable();
             MySqlCommand command = new MySqlCommand(query, con);
@@ -40,6 +45,10 @@ namespace OJT_Project
 
         public static void executeQuery(string query, MySqlConnection con)
         {
+            if (con.State == ConnectionState.Closed)
+            {
+                con.Open();
+            }
             /*
             MySqlConnection con = new MySqlConnection(connection.DatabaseConnection);
             try
@@ -58,6 +67,10 @@ namespace OJT_Project
 
         public static DataTable parseDataTableFromDB_secure(MySqlCommand cmd, MySqlConnection con)
         {
+            if (con.State == ConnectionState.Closed)
+            {
+                con.Open();
+            }
             //establish connection
             DataTable table = new DataTable();
             /*
@@ -81,6 +94,10 @@ namespace OJT_Project
         //using SQL parameters as opposed to query strings
         public static void executeQuery_secure(MySqlCommand cmd, MySqlConnection con)
         {
+            if(con.State == ConnectionState.Closed)
+            {
+                con.Open();
+            }
             /*
             MySqlConnection con = new MySqlConnection(connection.DatabaseConnection);
             try
